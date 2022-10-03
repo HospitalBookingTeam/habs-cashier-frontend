@@ -84,7 +84,7 @@ const Login = () => {
 						<TextInput
 							withAsterisk={true}
 							label="Username"
-							placeholder="user"
+							placeholder="kale"
 							size="md"
 							{...form.getInputProps('username')}
 						/>

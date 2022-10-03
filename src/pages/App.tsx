@@ -1,6 +1,6 @@
 import { lazy, Suspense, useLayoutEffect } from 'react'
 import { Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom'
-import { Box, LoadingOverlay } from '@mantine/core'
+import { Box, Center, Container, LoadingOverlay } from '@mantine/core'
 import { selectIsAuthenticated } from '@/store/auth/selectors'
 import { useAppSelector } from '@/store/hooks'
 import LayoutAppShell from '@/components/Layout'
@@ -15,23 +15,19 @@ const NotFound = lazy(() => import('@/components/NotFound/NotFoundPage'))
 function App() {
 	return (
 		<Suspense fallback={<LoadingOverlay visible={true} />}>
-			<Box
-				sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-			>
-				<Routes>
-					<Route path="/" element={<Outlet />}>
-						<Route element={<RequireAuth />}>
-							<Route index element={<Queue />} />
-							<Route path=":id" element={<QueueDetail />} />
-						</Route>
-
-						<Route path="/login" element={<IsUserRedirect />}>
-							<Route index element={<Login />} />
-						</Route>
+			<Routes>
+				<Route path="/" element={<Outlet />}>
+					<Route element={<RequireAuth />}>
+						<Route index element={<Queue />} />
+						<Route path=":id" element={<QueueDetail />} />
 					</Route>
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</Box>
+
+					<Route path="/login" element={<IsUserRedirect />}>
+						<Route index element={<Login />} />
+					</Route>
+				</Route>
+				<Route path="*" element={<NotFound />} />
+			</Routes>
 		</Suspense>
 	)
 }
@@ -55,7 +51,16 @@ const RequireAuth = () => {
 }
 const IsUserRedirect = () => {
 	const isAuthenticated = useAppSelector(selectIsAuthenticated)
-	return !isAuthenticated ? <Outlet /> : <Navigate to={'/'} />
+	return !isAuthenticated ? (
+		<Container
+			size="xl"
+			sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+		>
+			<Outlet />
+		</Container>
+	) : (
+		<Navigate to={'/'} />
+	)
 }
 
 export default App
