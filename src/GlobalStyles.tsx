@@ -28,8 +28,13 @@ const GlobalStyles = () => {
 				'tr:nth-of-type(even):not(.ignore)': {
 					backgroundColor: theme.colors.gray[2],
 				},
-				'th.right, td.right': {
-					textAlign: 'right !important',
+				'td.right': {
+					textAlign: 'right',
+				},
+				'thead tr th, tfoot tr th': {
+					'&.right': {
+						textAlign: 'right',
+					},
 				},
 			})}
 		/>
