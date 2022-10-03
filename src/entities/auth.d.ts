@@ -9,6 +9,7 @@ export type AuthUser = {
 export type AuthState = {
 	token: string
 	isAuthenticated: boolean
+	information: AuthUser
 }
 
 export type AuthForm = {

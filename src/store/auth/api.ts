@@ -1,10 +1,10 @@
-import { AuthForm } from '@/entities/auth'
+import { AuthForm, AuthState } from '@/entities/auth'
 import { retry } from '@reduxjs/toolkit/query/react'
 import { api } from '../api'
 
 export const authApi = api.injectEndpoints({
 	endpoints: (build) => ({
-		login: build.mutation<{ token: string }, any>({
+		login: build.mutation<Omit<AuthState, 'isAuthenticated'>, any>({
 			query: (credentials: AuthForm) => ({
 				url: 'login',
 				method: 'POST',

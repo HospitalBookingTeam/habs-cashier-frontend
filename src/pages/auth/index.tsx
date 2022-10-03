@@ -98,7 +98,7 @@ const Login = () => {
 							{...form.getInputProps('password')}
 						/>
 
-						<Checkbox label="Nhớ tôi nhé" mt="xl" size="md" />
+						{/* <Checkbox label="Nhớ tôi nhé" mt="xl" size="md" /> */}
 						<Button
 							type="submit"
 							fullWidth={true}

@@ -1,7 +1,15 @@
 import { selectAuth } from '@/store/auth/selectors'
 import { logout } from '@/store/auth/slice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { createStyles, Container, Button, Group, Text } from '@mantine/core'
+import {
+	createStyles,
+	Container,
+	Button,
+	Group,
+	Text,
+	Box,
+	Stack,
+} from '@mantine/core'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -60,22 +68,30 @@ const SimpleHeader = () => {
 	}, [authData])
 
 	return (
-		<div className={classes.header}>
+		<Box className={classes.header}>
 			<Container size="xl" className={classes.mainSection}>
 				<Group position="apart">
 					<Text color="white">Logo</Text>
 
-					<Button
-						variant="white"
-						onClick={() => {
-							dispatch(logout())
-						}}
-					>
-						Đăng xuất
-					</Button>
+					<Group>
+						<Stack spacing={4}>
+							<Text size="xs" color="white" sx={{ opacity: 0.7 }}>
+								Thu ngân
+							</Text>
+							<Text color="white">{authData?.information?.name}</Text>
+						</Stack>
+						<Button
+							variant="white"
+							onClick={() => {
+								dispatch(logout())
+							}}
+						>
+							Đăng xuất
+						</Button>
+					</Group>
 				</Group>
 			</Container>
-		</div>
+		</Box>
 	)
 }
 

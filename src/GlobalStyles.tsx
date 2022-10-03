@@ -25,6 +25,12 @@ const GlobalStyles = () => {
 				'.mantine-Modal-title': {
 					fontWeight: 700,
 				},
+				'tr:nth-of-type(even):not(.ignore)': {
+					backgroundColor: theme.colors.gray[2],
+				},
+				'th.right, td.right': {
+					textAlign: 'right !important',
+				},
 			})}
 		/>
 	)
