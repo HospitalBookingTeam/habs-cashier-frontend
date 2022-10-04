@@ -13,11 +13,17 @@ export const queueApi = api.injectEndpoints({
 				{ type: 'Queue' as const, id: 'LIST' },
 			],
 		}),
-		getQueueById: build.query<Bill, number | undefined>({
+		getBillById: build.query<Bill, number | undefined>({
 			query: (id) => ({
 				url: `bills/${id}`,
 			}),
 			providesTags: (result) => [{ type: 'Queue' as const, id: result?.id }],
+		}),
+		getBillByQr: build.mutation<Bill, string>({
+			query: (qr) => ({
+				url: `bills/qr/${qr}`,
+				type: 'GET',
+			}),
 		}),
 		confirmBill: build.mutation<void, number>({
 			query: (queueId) => ({
@@ -36,11 +42,18 @@ export const queueApi = api.injectEndpoints({
 
 export const {
 	useGetQueueQuery,
-	useGetQueueByIdQuery,
+	useGetBillByIdQuery,
+	useGetBillByQrMutation,
 	useConfirmBillMutation,
 	useInvalidateBillMutation,
 } = queueApi
 
 export const {
-	endpoints: { getQueue, getQueueById, confirmBill, invalidateBill },
+	endpoints: {
+		getQueue,
+		getBillById,
+		getBillByQr,
+		confirmBill,
+		invalidateBill,
+	},
 } = queueApi
