@@ -1,17 +1,23 @@
-import { selectAuth } from "@/store/auth/selectors";
-import { useAppSelector } from "@/store/hooks";
-import { useGetQueueQuery } from "@/store/queue/api";
-import { formatCurrency, formatDate } from "@/utils/formats";
-import { Stack, Title, TextInput, Paper, Table, Button, Group, Center } from "@mantine/core";
-import { useDebouncedState } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons";
-import { useNavigate } from "react-router-dom";
-import QrCodeButton from "./QrCodeButton";
+import { useGetQueueQuery } from '@/store/queue/api'
+import { formatCurrency, formatDate } from '@/utils/formats'
+import {
+	Stack,
+	Title,
+	TextInput,
+	Paper,
+	Table,
+	Button,
+	Group,
+	Center,
+} from '@mantine/core'
+import { useDebouncedState } from '@mantine/hooks'
+import { IconSearch } from '@tabler/icons'
+import { useNavigate } from 'react-router-dom'
+import QrCodeButton from './QrCodeButton'
 
 const Queue = () => {
-	const authData = useAppSelector(selectAuth);
-	const navigate = useNavigate();
-	const [value, setValue] = useDebouncedState("", 200);
+	const navigate = useNavigate()
+	const [value, setValue] = useDebouncedState('', 200)
 
 	const { data, isLoading } = useGetQueueQuery(
 		{
@@ -19,35 +25,44 @@ const Queue = () => {
 		},
 		{
 			refetchOnFocus: true,
-			skip: !authData?.information,
-		},
-	);
+			refetchOnMountOrArgChange: true,
+		}
+	)
 
 	const rows = data?.length ? (
-		data?.map(
-			(item) => (
-				<tr key={item.id}>
-					<td>{item.patientName}</td>
-					<td>{item?.dateOfBirth ? formatDate(item.dateOfBirth) : "---"}</td>
-					<td>{item?.timeCreated ? formatDate(item.timeCreated, "DD/MM/YYYY, HH:mm:ss") : "---"}</td>
-					<td className="right">{item?.total ? formatCurrency(item.total) : "---"}</td>
-					<td className="right">
-						<Button onClick={() => navigate(`/${item.id}`)}>Xem chi tiết</Button>
-					</td>
-				</tr>
-			),
-		)
+		data?.map((item) => (
+			<tr key={item.id}>
+				<td>{item.patientName}</td>
+				<td>{item?.dateOfBirth ? formatDate(item.dateOfBirth) : '---'}</td>
+				<td>
+					{item?.timeCreated
+						? formatDate(item.timeCreated, 'DD/MM/YYYY, HH:mm:ss')
+						: '---'}
+				</td>
+				<td className="right">
+					{item?.total ? formatCurrency(item.total) : '---'}
+				</td>
+				<td className="right">
+					<Button onClick={() => navigate(`/${item.id}`)}>Xem chi tiết</Button>
+				</td>
+			</tr>
+		))
 	) : (
 		<tr>
 			<td colSpan={5}>
 				<Center my="md">Không tìm thấy dữ liệu</Center>
 			</td>
 		</tr>
-	);
+	)
 
 	return (
 		<Stack>
-			<Stack sx={{ flexDirection: "row" }} align="center" justify={"space-between"} mb="sm">
+			<Stack
+				sx={{ flexDirection: 'row' }}
+				align="center"
+				justify={'space-between'}
+				mb="sm"
+			>
 				<Title order={1} size="h3">
 					Danh sách hóa đơn
 				</Title>
@@ -78,6 +93,6 @@ const Queue = () => {
 				</Table>
 			</Paper>
 		</Stack>
-	);
-};
-export default Queue;
+	)
+}
+export default Queue
