@@ -71,15 +71,12 @@ const SimpleHeader = () => {
 		<Box className={classes.header}>
 			<Container size="xl" className={classes.mainSection}>
 				<Group position="apart">
-					<Text color="white">Logo</Text>
+					<Text color="white">Thu ngân</Text>
 
 					<Group>
-						<Stack spacing={4}>
-							<Text size="xs" color="white" sx={{ opacity: 0.7 }}>
-								Thu ngân
-							</Text>
+						<Group align="baseline">
 							<Text color="white">{authData?.information?.name}</Text>
-						</Stack>
+						</Group>
 						<Button
 							variant="white"
 							onClick={() => {

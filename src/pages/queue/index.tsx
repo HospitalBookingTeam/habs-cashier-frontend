@@ -33,6 +33,7 @@ const Queue = () => {
 		data?.map((item) => (
 			<tr key={item.id}>
 				<td>{item.patientName}</td>
+				<td>{item?.title ?? '---'}</td>
 				<td>{item?.dateOfBirth ? formatDate(item.dateOfBirth) : '---'}</td>
 				<td>
 					{item?.timeCreated
@@ -61,7 +62,7 @@ const Queue = () => {
 				sx={{ flexDirection: 'row' }}
 				align="center"
 				justify={'space-between'}
-				mb="sm"
+				mb="xs"
 			>
 				<Title order={1} size="h3">
 					Danh sách hóa đơn
@@ -83,6 +84,7 @@ const Queue = () => {
 					<thead>
 						<tr>
 							<th>Tên người bệnh</th>
+							<th>Tổng quát</th>
 							<th>Ngày sinh</th>
 							<th>Thời gian</th>
 							<th className="right">Thành tiền</th>
