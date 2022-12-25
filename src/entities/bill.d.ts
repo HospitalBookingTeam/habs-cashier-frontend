@@ -25,6 +25,7 @@ export interface Bill {
 	cashierName: string
 	cashierId: number
 	details?: BillDetail[]
+	title?: string
 }
 
 export type BillParams = {

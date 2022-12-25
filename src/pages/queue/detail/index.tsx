@@ -14,6 +14,7 @@ import {
 	Button,
 	Text,
 	LoadingOverlay,
+	Spoiler,
 } from '@mantine/core'
 import { openConfirmModal } from '@mantine/modals'
 import { showNotification } from '@mantine/notifications'
@@ -107,12 +108,12 @@ const QueueDetail = () => {
 		})
 
 	return (
-		<Stack align={'start'}>
+		<Stack align={'start'} spacing={10}>
 			<Stack
 				sx={{ flexDirection: 'row', width: '100%' }}
 				align="center"
 				justify={'space-between'}
-				mb="sm"
+				mb="xs"
 				spacing={40}
 			>
 				<BackButton />
@@ -124,10 +125,12 @@ const QueueDetail = () => {
 			<Paper p="md" sx={{ width: '100%', position: 'relative' }}>
 				<LoadingOverlay visible={isLoadingInvalidate || isLoadingConfirm} />
 				<Stack>
-					<Info />
-					<Divider my="sm" />
+					<Spoiler maxHeight={130} showLabel="Mở rộng" hideLabel="Thu gọn">
+						<Info />
+					</Spoiler>
+					<Divider my="xs" />
 					<Details />
-					<Divider my="sm" />
+					<Divider my="xs" />
 					<Group position="right">
 						<Button
 							color="red"
