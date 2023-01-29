@@ -25,6 +25,9 @@ const useStyles = createStyles((theme) => ({
 				.background
 		}`,
 		marginBottom: 0,
+		position: 'fixed',
+		width: '100%',
+		zIndex: 999,
 	},
 
 	mainSection: {

@@ -76,11 +76,11 @@ const QueueDetail = () => {
 					Bạn đang xác nhận hóa đơn của{' '}
 					<Text span={true} weight={500}>
 						{data?.patientName}
-					</Text>
+					</Text>{' '}
 					với tổng tiền là{' '}
 					<Text span={true} weight={500}>
 						{data?.total ? formatCurrency(data.total) : '---'}
-					</Text>
+					</Text>{' '}
 					<Text span={true} italic={true}>
 						({data?.totalInWord || '---'})
 					</Text>

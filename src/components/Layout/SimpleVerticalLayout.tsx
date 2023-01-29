@@ -20,7 +20,7 @@ const SimpleVerticalLayout = ({ children }: SimpleVerticalLayoutProps) => {
 		>
 			<Stack>
 				<SimpleHeader />
-				<Container size="xl" sx={{ width: '100%' }}>
+				<Container size="xl" sx={{ width: '100%', marginTop: '80px' }}>
 					{children}
 				</Container>
 			</Stack>
