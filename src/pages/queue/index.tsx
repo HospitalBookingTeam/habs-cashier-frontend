@@ -86,7 +86,7 @@ const Queue = () => {
 							<th>Tên người bệnh</th>
 							<th>Tổng quát</th>
 							<th>Ngày sinh</th>
-							<th>Thời gian</th>
+							<th>Thời gian tạo</th>
 							<th className="right">Thành tiền</th>
 							<th></th>
 						</tr>
