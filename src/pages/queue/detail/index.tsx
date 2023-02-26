@@ -30,6 +30,7 @@ const QueueDetail = () => {
 	const { data } = useGetBillByIdQuery(Number(queueId), {
 		skip: !queueId,
 	})
+
 	const [invalidateBillMutation, { isLoading: isLoadingInvalidate }] =
 		useInvalidateBillMutation()
 	const [confirmBillMutation, { isLoading: isLoadingConfirm }] =
@@ -129,7 +130,7 @@ const QueueDetail = () => {
 						<Info />
 					</Spoiler>
 					<Divider my="xs" />
-					<Details />
+					<Details data={data} />
 					<Divider my="xs" />
 					<Group position="right">
 						<Button

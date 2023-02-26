@@ -1,15 +1,9 @@
-import { useGetBillByIdQuery } from '@/store/queue/api'
+import { Bill } from '@/entities/bill'
 import { formatCurrency } from '@/utils/formats'
 import { translateEnumInsuranceStatus } from '@/utils/renderEnums'
 import { Stack, Title, Table, Text } from '@mantine/core'
-import { useParams } from 'react-router-dom'
 
-const Details = () => {
-	const { id } = useParams()
-	const { data } = useGetBillByIdQuery(Number(id), {
-		skip: !id,
-	})
-
+const Details = ({ data }: { data?: Bill }) => {
 	const rows = data?.details?.map((item, index) => (
 		<tr key={item.id}>
 			<td>{index + 1}</td>
@@ -41,8 +35,8 @@ const Details = () => {
 	)
 
 	return (
-		<Stack>
-			<Title order={3} px="0" size="h4">
+		<Stack sx={{ flex: 1 }}>
+			<Title order={3} px="0" size="h6">
 				Chi tiết hóa đơn
 			</Title>
 			<Stack sx={{ gap: 0 }}>
@@ -50,11 +44,11 @@ const Details = () => {
 					<thead>
 						<tr>
 							<th>STT</th>
-							<th>Tên dịch vụ</th>
+							<th>Tên</th>
 							<th>Tình trạng BHYT</th>
-							<th className="right">Đơn giá</th>
-							<th className="right">Số lượng</th>
-							<th className="right">Thành tiền</th>
+							<th className="right">ĐG</th>
+							<th className="right">SL</th>
+							<th className="right">T.Tiền</th>
 						</tr>
 					</thead>
 					<tbody>{rows}</tbody>

@@ -11,8 +11,8 @@ import {
 	Center,
 } from '@mantine/core'
 import { useDebouncedState } from '@mantine/hooks'
-import { IconSearch } from '@tabler/icons'
-import { useNavigate } from 'react-router-dom'
+import { IconCalendarPlus, IconSearch } from '@tabler/icons'
+import { Link, useNavigate } from 'react-router-dom'
 import QrCodeButton from './QrCodeButton'
 
 const Queue = () => {
@@ -77,6 +77,15 @@ const Queue = () => {
 						onChange={(event) => setValue(event.currentTarget.value)}
 					/>
 					<QrCodeButton />
+					<Button
+						variant="gradient"
+						gradient={{ from: 'teal', to: 'lime', deg: 105 }}
+						leftIcon={<IconCalendarPlus />}
+						component={Link}
+						to="/book"
+					>
+						Hỗ trợ đặt lịch
+					</Button>
 				</Group>
 			</Stack>
 			<Paper p="md">

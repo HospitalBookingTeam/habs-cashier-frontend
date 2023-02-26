@@ -8,10 +8,10 @@ import {
 	Group,
 	Text,
 	Box,
-	Stack,
+	Title,
 } from '@mantine/core'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -74,12 +74,17 @@ const SimpleHeader = () => {
 		<Box className={classes.header}>
 			<Container size="xl" className={classes.mainSection}>
 				<Group position="apart">
-					<Text color="white">Thu ngân</Text>
+					<Group align="baseline">
+						<Text weight={'bolder'} color="white" component={Link} to="/">
+							{location.pathname === '/book' ? 'Hỗ trợ đặt lịch' : 'Trang chủ'}
+						</Text>
+						<Text color="white">|</Text>
+						<Text color="white" size="sm">
+							{authData?.information?.name}
+						</Text>
+					</Group>
 
 					<Group>
-						<Group align="baseline">
-							<Text color="white">{authData?.information?.name}</Text>
-						</Group>
 						<Button
 							variant="white"
 							onClick={() => {
