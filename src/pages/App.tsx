@@ -10,21 +10,22 @@ const Login = lazy(() => import('@/pages/auth'))
 
 const Queue = lazy(() => import('@/pages/queue'))
 const QueueDetail = lazy(() => import('@/pages/queue/detail'))
+const BookAppointment = lazy(() => import('@/pages/booking'))
 const NotFound = lazy(() => import('@/components/NotFound/NotFoundPage'))
 
 function App() {
 	return (
 		<Suspense fallback={<LoadingOverlay visible={true} />}>
 			<Routes>
-				<Route path="/" element={<Outlet />}>
-					<Route element={<RequireAuth />}>
+				<Route element={<RequireAuth />}>
+					<Route path="/" element={<Outlet />}>
 						<Route index element={<Queue />} />
 						<Route path=":id" element={<QueueDetail />} />
+						<Route path="book" element={<BookAppointment />} />
 					</Route>
-
-					<Route path="/login" element={<IsUserRedirect />}>
-						<Route index element={<Login />} />
-					</Route>
+				</Route>
+				<Route element={<IsUserRedirect />}>
+					<Route path="/login" element={<Login />} />
 				</Route>
 				<Route path="*" element={<NotFound />} />
 			</Routes>

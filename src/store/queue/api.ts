@@ -1,4 +1,4 @@
-import { Bill, BillParams } from '@/entities/bill'
+import { Bill, BillParams, BillPayResponse } from '@/entities/bill'
 import { api } from '../api'
 
 export const queueApi = api.injectEndpoints({
@@ -25,7 +25,7 @@ export const queueApi = api.injectEndpoints({
 				type: 'GET',
 			}),
 		}),
-		confirmBill: build.mutation<void, number>({
+		confirmBill: build.mutation<BillPayResponse, number>({
 			query: (queueId) => ({
 				url: `bills/${queueId}/pay`,
 				method: 'POST',
