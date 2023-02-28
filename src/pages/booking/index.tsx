@@ -68,7 +68,7 @@ const BookFormModal = () => {
 	const [isGuest, setIsGuest] = useState('guest')
 	const [phoneNo, setPhoneNo] = useState<string>('')
 	const [userAcc, setUserAcc] = useState<UserAccount>()
-	const [patientProfile, setPatientProfile] = useState<string>()
+	const [patientProfile, setPatientProfile] = useState<string | null>()
 	const [isCreateNewProfile, setIsCreateNewProfile] = useState(false)
 	const [showBill, setShowBill] = useState(false)
 	const [billResponse, setBillResponse] = useState<Bill | undefined>(undefined)
