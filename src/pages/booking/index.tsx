@@ -22,6 +22,7 @@ import { openModal } from '@mantine/modals'
 import PrintDetail from './PrintDetail'
 import {
 	useBookForGuestMutation,
+	useBookForUserMutation,
 	useGetDoctorsQuery,
 	useGetSlotsQuery,
 	useLazyGetUserAccountQuery,
@@ -93,34 +94,54 @@ const BookFormModal = () => {
 	const slotOptions = slots
 		?.filter((item) => !!item.isAvailable)
 		.map((item) => ({
-			value: `${item.session}-${item.numericalOrder}`,
+			value: `${item.numericalOrder}-${item.session}`,
 			label: formatDate(item.estimatedStartTime, 'HH:mm'),
 		}))
 
 	const [bookForGuestMutation, { isLoading: isLoadingBookingForGuest }] =
 		useBookForGuestMutation()
+	const [bookForUserMutation, { isLoading: isLoadingBookingForUser }] =
+		useBookForUserMutation()
 	const [payBillMutation, { isLoading: isLoadingPayBill }] =
 		useConfirmBillMutation()
 
 	const onSubmit = async (values: AppointmentForGuest) => {
-		await bookForGuestMutation({
-			...values,
-			gender: Number(values.gender),
-			numericalOrder: Number(values.numericalOrder.toString().split('-')[0]),
-			doctorId: Number(values.doctorId),
-			date:
-				slots?.find(
-					(item) =>
-						item.numericalOrder ===
-						Number(values.numericalOrder.toString().split('-')[0])
-				)?.estimatedStartTime ?? DATE,
-		})
-			.unwrap()
-			.then((resp) => {
-				setBillResponse(resp.bill)
-				setShowBill(true)
+		console.log('session', values.numericalOrder.toString().split('-'))
+		const _slotMeta = values.numericalOrder.toString().split('-')
+		const _slot = slots?.find(
+			(item) =>
+				item.numericalOrder === Number(_slotMeta[0]) &&
+				item.session === Number(_slotMeta[1])
+		)
+		if (isGuest === 'guest') {
+			await bookForGuestMutation({
+				...values,
+				gender: Number(values.gender),
+				numericalOrder: Number(_slotMeta[0]),
+				doctorId: Number(values.doctorId),
+				date: _slot?.estimatedStartTime ?? DATE,
 			})
-			.catch((error) => {})
+				.unwrap()
+				.then((resp) => {
+					setBillResponse(resp.bill)
+					setShowBill(true)
+				})
+				.catch((error) => {})
+		} else {
+			await bookForUserMutation({
+				clinicalSymptom: values.clinicalSymptom,
+				numericalOrder: Number(_slotMeta[0]),
+				patientId: Number(patientProfile),
+				doctorId: Number(values.doctorId),
+				date: _slot?.estimatedStartTime ?? DATE,
+			})
+				.unwrap()
+				.then((resp) => {
+					setBillResponse(resp.bill)
+					setShowBill(true)
+				})
+				.catch((error) => {})
+		}
 	}
 
 	const onCreatePatientProfile = (query: string) => {
@@ -204,7 +225,6 @@ const BookFormModal = () => {
 		}
 	}, [form.isTouched('doctorId'), showBill])
 
-	console.log('dob', form.values.dateOfBirth)
 	return (
 		<Stack sx={{ paddingBottom: 100 }}>
 			<Group align="start" position="center">
@@ -382,7 +402,9 @@ const BookFormModal = () => {
 													type="submit"
 													sx={{ width: 300 }}
 													disabled={!form.isValid()}
-													loading={isLoadingBookingForGuest}
+													loading={
+														isLoadingBookingForGuest || isLoadingBookingForUser
+													}
 												>
 													Thanh toán
 												</Button>
