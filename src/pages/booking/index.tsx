@@ -157,6 +157,7 @@ const BookFormModal = () => {
 				.then((resp) => {
 					setBillResponse(resp.bill)
 					setShowBill(true)
+					nextStep()
 				})
 				.catch((error) => {})
 		} else {
@@ -171,7 +172,7 @@ const BookFormModal = () => {
 				.then((resp) => {
 					setBillResponse(resp.bill)
 					setShowBill(true)
-					setActive(2)
+					nextStep()
 				})
 				.catch((error) => {})
 		}
@@ -385,7 +386,10 @@ const BookFormModal = () => {
 							</Paper>
 						</Group>
 					</Stepper.Step>
-					<Stepper.Step label="Bác sĩ phụ trách" disabled={!form.isValid()}>
+					<Stepper.Step
+						label="Bác sĩ phụ trách"
+						allowStepSelect={form.isValid()}
+					>
 						{!!slotForAnonymous?.length ? (
 							<Stack align="center">
 								<Paper p="md" sx={{ minWidth: 500 }}>
@@ -438,7 +442,10 @@ const BookFormModal = () => {
 							</Stack>
 						)}
 					</Stepper.Step>
-					<Stepper.Step label="Xác nhận thanh toán" disabled={!showBill}>
+					<Stepper.Step
+						label="Xác nhận thanh toán"
+						allowStepSelect={!!showBill}
+					>
 						<Stack align="center">
 							<Paper shadow="xs" radius="md" p="md" sx={{ minWidth: 700 }}>
 								<Details data={billResponse} />
