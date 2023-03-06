@@ -40,7 +40,11 @@ export const bookingApi = api.injectEndpoints({
 				{ type: 'Record' as const, id: 'SLOTS' },
 			],
 		}),
-
+		getSlotForAnonymous: build.query<Slot[], void>({
+			query: () => ({
+				url: `slots/slot-for-annonymous`,
+			}),
+		}),
 		bookForGuest: build.mutation<BillConfirmResponse, AppointmentForGuest>({
 			query: (body) => ({
 				url: `appointments/guest`,
@@ -65,4 +69,5 @@ export const {
 	useGetUserAccountQuery,
 	useBookForGuestMutation,
 	useBookForUserMutation,
+	useLazyGetSlotForAnonymousQuery,
 } = bookingApi

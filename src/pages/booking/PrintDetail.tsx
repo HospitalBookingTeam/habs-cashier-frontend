@@ -1,6 +1,6 @@
 import { selectAuth } from '@/store/auth/selectors'
 import { useAppSelector } from '@/store/hooks'
-import { Button, Stack, Group, Text, Divider } from '@mantine/core'
+import { Button, Stack, Group, Text, Divider, Paper } from '@mantine/core'
 import { IconPrinter } from '@tabler/icons'
 import { useRef } from 'react'
 import Barcode from 'react-barcode'
@@ -20,7 +20,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 		<>
 			<Button
 				fullWidth={true}
-				color="green"
+				color="cyan"
 				variant="outline"
 				onClick={handlePrint}
 				leftIcon={<IconPrinter />}
@@ -124,10 +124,24 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 									<Text size="xs">
 										{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
 									</Text>
-									<Text mb="xl" transform="uppercase">
+									<Text mb="md" transform="uppercase">
 										Xác nhận đặt lịch
 									</Text>
-									<Text mt="xl" weight={'bold'} transform="uppercase">
+									<Paper withBorder p="sm" radius={0} color="green">
+										<Stack>
+											<Text color="red" size="xs">
+												Signature Valid
+											</Text>
+											<Text color="red" size="xs">
+												Ký bởi: BỆNH VIỆN NHI ĐỒNG 2
+											</Text>
+											<Text color="red" size="xs">
+												Ký ngày:{' '}
+												{formatDate(new Date().toString(), 'DD-MM-YYYY')}
+											</Text>
+										</Stack>
+									</Paper>
+									<Text mt="md" weight={'bold'} transform="uppercase">
 										NVHC. {authData?.information?.name}
 									</Text>
 								</Stack>

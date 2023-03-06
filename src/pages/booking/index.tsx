@@ -1,5 +1,4 @@
 import {
-	LoadingOverlay,
 	Container,
 	Stack,
 	Radio,
@@ -12,6 +11,11 @@ import {
 	Paper,
 	Text,
 	SegmentedControl,
+	Avatar,
+	Indicator,
+	Stepper,
+	Skeleton,
+	Divider,
 } from '@mantine/core'
 import { useForm, yupResolver } from '@mantine/form'
 import { useState, useEffect } from 'react'
@@ -25,16 +29,25 @@ import {
 	useBookForUserMutation,
 	useGetDoctorsQuery,
 	useGetSlotsQuery,
+	useLazyGetSlotForAnonymousQuery,
 	useLazyGetUserAccountQuery,
 } from '@/store/booking/api'
 import { AppointmentForGuest } from '@/entities/appointment'
-import { Bill } from '@/entities/bill'
+import { Bill, BillConfirmResponse, BillPayResponse } from '@/entities/bill'
 import { formatDate } from '@/utils/formats'
 import { useConfirmBillMutation } from '@/store/queue/api'
 import * as Yup from 'yup'
-import { useNavigate } from 'react-router-dom'
-import { IconPhone, IconSearch } from '@tabler/icons'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+	IconBuilding,
+	IconBuildingHospital,
+	IconClock,
+	IconPhone,
+	IconSearch,
+	IconUserCheck,
+} from '@tabler/icons'
 import { Patient, UserAccount } from '@/entities/user'
+import useBookingStyles from './styles'
 
 const DATE = new Date().toISOString()
 
@@ -43,13 +56,15 @@ const schema = Yup.object().shape({
 	dateOfBirth: Yup.date().required('Vui lòng chọn ngày sinh'),
 	clinicalSymptom: Yup.string().required('Vui lòng ghi rõ triệu chứng'),
 	gender: Yup.string().required(),
-	doctorId: Yup.string().required('Vui lòng chọn bác sĩ'),
-	numericalOrder: Yup.string().required('Vui lòng chọn khung giờ khám'),
+	// doctorId: Yup.string().required('Vui lòng chọn bác sĩ'),
+	// numericalOrder: Yup.string().required('Vui lòng chọn khung giờ khám'),
 })
 
 const BookFormModal = () => {
 	const navigate = useNavigate()
-	const form = useForm<AppointmentForGuest>({
+	const form = useForm<
+		Omit<AppointmentForGuest, 'doctorId' | 'numericalOrder' | 'date'>
+	>({
 		validate: yupResolver(schema),
 		initialValues: {
 			name: '',
@@ -60,9 +75,9 @@ const BookFormModal = () => {
 			address: '',
 			gender: '0',
 			clinicalSymptom: '',
-			numericalOrder: '',
-			doctorId: '',
-			date: DATE,
+			// numericalOrder: '',
+			// doctorId: '',
+			// date: DATE,
 		},
 		validateInputOnChange: true,
 	})
@@ -70,9 +85,24 @@ const BookFormModal = () => {
 	const [phoneNo, setPhoneNo] = useState<string>('')
 	const [userAcc, setUserAcc] = useState<UserAccount>()
 	const [patientProfile, setPatientProfile] = useState<string | null>()
+	const [active, setActive] = useState(0)
+	console.log('active', active)
+	const { classes } = useBookingStyles()
+	const nextStep = () =>
+		setActive((current) => (current < 3 ? current + 1 : current))
+	const prevStep = () =>
+		setActive((current) => (current > 0 ? current - 1 : current))
+
 	const [isCreateNewProfile, setIsCreateNewProfile] = useState(false)
 	const [showBill, setShowBill] = useState(false)
 	const [billResponse, setBillResponse] = useState<Bill | undefined>(undefined)
+	const [confirmBillResponse, setConfirmBillResponse] = useState<
+		BillPayResponse | undefined
+	>(undefined)
+	const [
+		triggerGetSlotForAnonyous,
+		{ isLoading: isLoadingGetSlotForAnonyous, data: slotForAnonymous },
+	] = useLazyGetSlotForAnonymousQuery()
 
 	const { data: doctors, isLoading: isLoadingDoctors } = useGetDoctorsQuery({
 		date: DATE,
@@ -82,21 +112,21 @@ const BookFormModal = () => {
 		label: item.name,
 	}))
 
-	const { data: slots, isLoading: isLoadingSlots } = useGetSlotsQuery(
-		{
-			doctorId: Number(form.values.doctorId),
-			date: DATE,
-		},
-		{
-			skip: !form.values.doctorId,
-		}
-	)
-	const slotOptions = slots
-		?.filter((item) => !!item.isAvailable)
-		.map((item) => ({
-			value: `${item.numericalOrder}-${item.session}`,
-			label: formatDate(item.estimatedStartTime, 'HH:mm'),
-		}))
+	// const { data: slots, isLoading: isLoadingSlots } = useGetSlotsQuery(
+	// 	{
+	// 		doctorId: Number(form.values.doctorId),
+	// 		date: DATE,
+	// 	},
+	// 	{
+	// 		skip: !form.values.doctorId,
+	// 	}
+	// )
+	// const slotOptions = slots
+	// 	?.filter((item) => !!item.isAvailable)
+	// 	.map((item) => ({
+	// 		value: `${item.numericalOrder}-${item.session}`,
+	// 		label: formatDate(item.estimatedStartTime, 'HH:mm'),
+	// 	}))
 
 	const [bookForGuestMutation, { isLoading: isLoadingBookingForGuest }] =
 		useBookForGuestMutation()
@@ -105,21 +135,23 @@ const BookFormModal = () => {
 	const [payBillMutation, { isLoading: isLoadingPayBill }] =
 		useConfirmBillMutation()
 
-	const onSubmit = async (values: AppointmentForGuest) => {
-		console.log('session', values.numericalOrder.toString().split('-'))
-		const _slotMeta = values.numericalOrder.toString().split('-')
-		const _slot = slots?.find(
-			(item) =>
-				item.numericalOrder === Number(_slotMeta[0]) &&
-				item.session === Number(_slotMeta[1])
-		)
+	const onSubmit = async (
+		values: Omit<AppointmentForGuest, 'doctorId' | 'numericalOrder' | 'date'>
+	) => {
+		// const _slotMeta = values.numericalOrder.toString().split('-')
+		// const _slot = slots?.find(
+		// 	(item) =>
+		// 		item.numericalOrder === Number(_slotMeta[0]) &&
+		// 		item.session === Number(_slotMeta[1])
+		// )
+		if (!slotForAnonymous?.length) return
 		if (isGuest === 'guest') {
 			await bookForGuestMutation({
 				...values,
 				gender: Number(values.gender),
-				numericalOrder: Number(_slotMeta[0]),
-				doctorId: Number(values.doctorId),
-				date: _slot?.estimatedStartTime ?? DATE,
+				numericalOrder: slotForAnonymous[0].numericalOrder,
+				doctorId: slotForAnonymous[0].doctorId,
+				date: slotForAnonymous[0].estimatedStartTime,
 			})
 				.unwrap()
 				.then((resp) => {
@@ -130,15 +162,16 @@ const BookFormModal = () => {
 		} else {
 			await bookForUserMutation({
 				clinicalSymptom: values.clinicalSymptom,
-				numericalOrder: Number(_slotMeta[0]),
 				patientId: Number(patientProfile),
-				doctorId: Number(values.doctorId),
-				date: _slot?.estimatedStartTime ?? DATE,
+				numericalOrder: slotForAnonymous[0].numericalOrder,
+				doctorId: slotForAnonymous[0].doctorId,
+				date: slotForAnonymous[0].estimatedStartTime,
 			})
 				.unwrap()
 				.then((resp) => {
 					setBillResponse(resp.bill)
 					setShowBill(true)
+					setActive(2)
 				})
 				.catch((error) => {})
 		}
@@ -160,194 +193,150 @@ const BookFormModal = () => {
 		if (!billResponse) return
 		await payBillMutation(billResponse.id)
 			.unwrap()
-			.then((resp) =>
-				openModal({
-					title: 'Đặt lịch thành công',
-					children: (
-						<Stack sx={{ minHeight: 450 }}>
-							<Group
-								align="center"
-								position="center"
-								mx="auto"
-								sx={{ width: 200 }}
-							>
-								<PrintDetail data={resp} />
-							</Group>
-
-							<Stack>
-								<Text weight="bold">Khám tổng quát</Text>
-								<Text>
-									Họ tên: {resp.checkupRecords?.[0]?.patientData.name}
-								</Text>
-								<Text>
-									Ngày sinh:{' '}
-									{resp.checkupRecords?.[0]?.patientData.dateOfBirth
-										? formatDate(
-												resp?.checkupRecords?.[0]?.patientData.dateOfBirth
-										  )
-										: '---'}
-								</Text>
-								<Text>
-									Giới tính:{' '}
-									{resp?.checkupRecords?.[0]?.patientData.gender === 0
-										? 'Nam'
-										: 'Nữ'}
-								</Text>
-							</Stack>
-							<Stack>
-								<Text>
-									Phòng {resp?.checkupRecords?.[0]?.roomNumber} - Tầng{' '}
-									{resp?.checkupRecords?.[0]?.floor}
-								</Text>
-								<Text>
-									Số khám bệnh: {resp?.checkupRecords?.[0]?.numericalOrder}
-								</Text>
-								<Text>
-									Bác sĩ phụ trách: {resp?.checkupRecords?.[0]?.doctorName}
-								</Text>
-							</Stack>
-						</Stack>
-					),
-					centered: true,
-					size: '70%',
-					onClose: () => {
-						navigate('/')
-					},
-				})
-			)
+			.then((resp) => {
+				nextStep()
+				setConfirmBillResponse(resp)
+			})
 	}
 
-	useEffect(() => {
-		if (showBill) return
-		if (form.isTouched('doctorId')) {
-			form.resetTouched()
-			form.setValues({ ...form.values, numericalOrder: '' })
-		}
-	}, [form.isTouched('doctorId'), showBill])
+	console.log('slotForAnonymous', slotForAnonymous)
+	// useEffect(() => {
+	// 	if (showBill) return
+	// 	if (form.isTouched('doctorId')) {
+	// 		form.resetTouched()
+	// 		form.setValues({ ...form.values, numericalOrder: '' })
+	// 	}
+	// }, [form.isTouched('doctorId'), showBill])
 
 	return (
 		<Stack sx={{ paddingBottom: 100 }}>
-			<Group align="start" position="center">
-				<Paper shadow="xs" radius="md" p="md">
-					<Stack sx={{ position: 'relative' }}>
-						<LoadingOverlay visible={false} />
-
-						<SegmentedControl
-							color="green"
-							value={isGuest}
-							onChange={setIsGuest}
-							data={[
-								{ label: 'Khách vãng lai', value: 'guest' },
-								{ label: 'Tài khoản có sẵn', value: 'user' },
-							]}
-						/>
-						<form onSubmit={form.onSubmit(onSubmit)}>
-							<Stack>
-								{isGuest !== 'guest' && (
-									<Group grow align="start">
-										<Stack>
-											<TextInput
-												value={phoneNo}
-												onChange={(event) =>
-													setPhoneNo(event.currentTarget.value)
-												}
-												rightSection={
-													<ActionIcon
-														color="blue"
-														onClick={onFindUserAcc}
-														loading={userAccResult.isLoading}
-													>
-														<IconSearch size={16} />
-													</ActionIcon>
-												}
-												onKeyDown={(e) => {
-													if (e.key === 'Enter') {
-														onFindUserAcc()
-													}
-												}}
-												icon={<IconPhone size={14} />}
-												label="Tài khoản"
-												placeholder="Nhập số điện thoại"
-												readOnly={showBill}
-											/>
-											{!!userAcc && (
-												<Text>
-													{userAcc.name} - {userAcc.email}
-												</Text>
-											)}
-										</Stack>
-										<Select
-											label="Hồ sơ khám bệnh"
-											placeholder="Chọn hồ sơ khám bệnh của bé"
-											data={
-												userAcc?.patients?.map((item) => ({
-													value: item.accountId.toString(),
-													label: item.name,
-												})) ?? []
-											}
-											value={patientProfile}
-											onChange={(val) => {
-												setPatientProfile(val)
-												const profile = userAcc?.patients?.find(
-													(item) => item.accountId.toString() === val
-												)
-												if (!profile) return
-												form.setValues({
-													...form.values,
-													dateOfBirth: new Date(profile.dateOfBirth),
-													phoneNo: profile.phoneNumber,
-													address: profile.address,
-													bhyt: profile.bhyt,
-													gender: profile.gender.toString(),
-													name: profile.name,
-												})
-												form.resetDirty()
-											}}
-											disabled={!userAcc}
-											searchable
-											creatable
-											readOnly={showBill}
-										/>
-									</Group>
-								)}
-								<TextInput
-									withAsterisk
-									required
-									label="Họ tên"
-									readOnly={showBill}
-									{...form.getInputProps('name')}
-								/>
-								<Group grow align="start">
-									<DatePicker
-										withAsterisk
-										required
-										locale="vi"
-										label="Ngày sinh"
-										readOnly={showBill}
-										{...form.getInputProps('dateOfBirth')}
+			<form id="pay-form" onSubmit={form.onSubmit(onSubmit)}>
+				<Stepper
+					active={active}
+					onStepClick={setActive}
+					breakpoint="sm"
+					classNames={classes}
+					size="lg"
+				>
+					<Stepper.Step label="Thông tin khám bệnh">
+						<Group align="start" position="center">
+							<Paper shadow="xs" radius="md" p="md">
+								<Stack sx={{ position: 'relative' }}>
+									<SegmentedControl
+										color="green"
+										value={isGuest}
+										onChange={setIsGuest}
+										data={[
+											{ label: 'Khách vãng lai', value: 'guest' },
+											{ label: 'Tài khoản có sẵn', value: 'user' },
+										]}
 									/>
-									<Radio.Group
-										required
-										label="Giới tính"
-										withAsterisk
-										readOnly={showBill}
-										{...form.getInputProps('gender')}
-									>
-										<Radio value="0" label="Nam" />
-										<Radio value="1" label="Nữ" />
-									</Radio.Group>
-								</Group>
-								<Textarea
-									required
-									label="Triệu chứng"
-									placeholder="Vui lòng điền rõ triệu chứng của bé"
-									withAsterisk
-									readOnly={showBill}
-									sx={{ minWidth: !showBill ? 500 : 'auto' }}
-									{...form.getInputProps('clinicalSymptom')}
-								/>
+									<Stack>
+										{isGuest !== 'guest' && (
+											<Group grow align="start">
+												<Stack>
+													<TextInput
+														value={phoneNo}
+														onChange={(event) =>
+															setPhoneNo(event.currentTarget.value)
+														}
+														rightSection={
+															<ActionIcon
+																color="blue"
+																onClick={onFindUserAcc}
+																loading={userAccResult.isLoading}
+															>
+																<IconSearch size={16} />
+															</ActionIcon>
+														}
+														onKeyDown={(e) => {
+															if (e.key === 'Enter') {
+																onFindUserAcc()
+															}
+														}}
+														icon={<IconPhone size={14} />}
+														label="Tài khoản"
+														placeholder="Nhập số điện thoại"
+														readOnly={showBill}
+													/>
+													{!!userAcc && (
+														<Text>
+															{userAcc.name} - {userAcc.email}
+														</Text>
+													)}
+												</Stack>
+												<Select
+													label="Hồ sơ khám bệnh"
+													placeholder="Chọn hồ sơ khám bệnh của bé"
+													data={
+														userAcc?.patients?.map((item) => ({
+															value: item.accountId.toString(),
+															label: item.name,
+														})) ?? []
+													}
+													value={patientProfile}
+													onChange={(val) => {
+														setPatientProfile(val)
+														const profile = userAcc?.patients?.find(
+															(item) => item.accountId.toString() === val
+														)
+														if (!profile) return
+														form.setValues({
+															...form.values,
+															dateOfBirth: new Date(profile.dateOfBirth),
+															phoneNo: profile.phoneNumber,
+															address: profile.address,
+															bhyt: profile.bhyt,
+															gender: profile.gender.toString(),
+															name: profile.name,
+														})
+														form.resetDirty()
+													}}
+													disabled={!userAcc}
+													searchable
+													creatable
+													readOnly={showBill}
+												/>
+											</Group>
+										)}
+										<TextInput
+											withAsterisk
+											required
+											label="Họ tên"
+											readOnly={showBill}
+											{...form.getInputProps('name')}
+										/>
+										<Group grow align="start">
+											<DatePicker
+												withAsterisk
+												required
+												locale="vi"
+												label="Ngày sinh"
+												readOnly={showBill}
+												{...form.getInputProps('dateOfBirth')}
+											/>
+											<Radio.Group
+												required
+												label="Giới tính"
+												withAsterisk
+												readOnly={showBill}
+												{...form.getInputProps('gender')}
+											>
+												<Radio value="0" label="Nam" />
+												<Radio value="1" label="Nữ" />
+											</Radio.Group>
+										</Group>
+										<Textarea
+											required
+											label="Triệu chứng"
+											placeholder="Vui lòng điền rõ triệu chứng của bé"
+											withAsterisk
+											readOnly={showBill}
+											sx={{ minWidth: !showBill ? 500 : 'auto' }}
+											{...form.getInputProps('clinicalSymptom')}
+										/>
 
-								<Select
+										{/* <Select
 									withAsterisk={true}
 									label="Bác sĩ khám bệnh"
 									placeholder="Chọn bác sĩ khám bệnh"
@@ -364,90 +353,243 @@ const BookFormModal = () => {
 									readOnly={showBill}
 									disabled={!form.values.doctorId}
 									{...form.getInputProps('numericalOrder')}
-								/>
-								<Group grow align="start">
-									<TextInput
-										// withAsterisk
-										// required
-										label="SĐT"
-										readOnly={showBill}
-										{...form.getInputProps('phoneNo')}
-									/>
-									<Textarea
-										label="Địa chỉ"
-										readOnly={showBill}
-										{...form.getInputProps('address')}
-									/>
-								</Group>
-								<Group grow>
-									<TextInput
-										label="BHXH"
-										readOnly={showBill}
-										{...form.getInputProps('bhxh')}
-									/>
-									<TextInput
-										label="BHYT"
-										readOnly={showBill}
-										{...form.getInputProps('bhyt')}
-									/>
-								</Group>
-								<Paper
-									sx={{ position: 'fixed', bottom: 0, left: 0, width: '100%' }}
-									p="md"
-								>
-									<Container size="xl">
-										<Group position="right">
-											{!showBill && (
-												<Button
-													type="submit"
-													sx={{ width: 300 }}
-													disabled={!form.isValid()}
-													loading={
-														isLoadingBookingForGuest || isLoadingBookingForUser
-													}
-												>
-													Thanh toán
-												</Button>
-											)}
-											{showBill && (
-												<>
-													<Button
-														variant="outline"
-														sx={{ width: 150 }}
-														color="red"
-														onClick={() => {
-															form.reset()
-															setShowBill(false)
-															setBillResponse(undefined)
-														}}
-														type="button"
-														disabled={isLoadingPayBill}
-													>
-														Hủy
-													</Button>
-													<Button
-														sx={{ width: 300 }}
-														type="button"
-														onClick={onConfirmBill}
-														loading={isLoadingPayBill}
-													>
-														Xác nhận
-													</Button>
-												</>
-											)}
+								/> */}
+										<Group grow align="start">
+											<TextInput
+												// withAsterisk
+												// required
+												label="SĐT"
+												readOnly={showBill}
+												{...form.getInputProps('phoneNo')}
+											/>
+											<Textarea
+												label="Địa chỉ"
+												readOnly={showBill}
+												{...form.getInputProps('address')}
+											/>
 										</Group>
-									</Container>
+										<Group grow>
+											<TextInput
+												label="BHXH"
+												readOnly={showBill}
+												{...form.getInputProps('bhxh')}
+											/>
+											<TextInput
+												label="BHYT"
+												readOnly={showBill}
+												{...form.getInputProps('bhyt')}
+											/>
+										</Group>
+									</Stack>
+								</Stack>
+							</Paper>
+						</Group>
+					</Stepper.Step>
+					<Stepper.Step label="Bác sĩ phụ trách" disabled={!form.isValid()}>
+						{!!slotForAnonymous?.length ? (
+							<Stack align="center">
+								<Paper p="md" sx={{ minWidth: 500 }}>
+									<Stack spacing="lg">
+										<Text>
+											Dưới đây là thông tin bác sĩ khám bệnh và khung giờ dự
+											kiến
+										</Text>
+										<Divider />
+										<Group spacing="xl">
+											<Indicator>
+												<Avatar variant="outline">
+													<IconUserCheck size="1.5rem" />
+												</Avatar>
+											</Indicator>
+											<Text>BS. {slotForAnonymous[0].doctor}</Text>
+										</Group>
+										<Group spacing="xl">
+											<Indicator>
+												<Avatar variant="outline">
+													<IconClock size="1.5rem" />
+												</Avatar>
+											</Indicator>
+											<Text>
+												{formatDate(
+													slotForAnonymous[0].estimatedStartTime,
+													'HH:mm'
+												)}{' '}
+												(Dự kiến)
+											</Text>
+										</Group>
+										<Group spacing="xl">
+											<Avatar variant="outline">
+												<IconBuildingHospital size="1.5rem" />
+											</Avatar>
+											<Text>
+												Phòng {slotForAnonymous[0].roomNumber} - Tầng{' '}
+												{slotForAnonymous[0].floor}
+											</Text>
+										</Group>
+									</Stack>
 								</Paper>
 							</Stack>
-						</form>
-					</Stack>
-				</Paper>
-				{showBill && (
-					<Paper shadow="xs" radius="md" p="md">
-						<Details data={billResponse} />
-					</Paper>
-				)}
-			</Group>
+						) : (
+							<Stack align="center" p="md">
+								<Stack sx={{ minWidth: 500 }}>
+									<Skeleton height={40} radius="xl" />
+									<Skeleton height={40} radius="xl" />
+								</Stack>
+							</Stack>
+						)}
+					</Stepper.Step>
+					<Stepper.Step label="Xác nhận thanh toán" disabled={!showBill}>
+						<Stack align="center">
+							<Paper shadow="xs" radius="md" p="md" sx={{ minWidth: 700 }}>
+								<Details data={billResponse} />
+							</Paper>
+						</Stack>
+					</Stepper.Step>
+					<Stepper.Completed>
+						<Stack sx={{ minHeight: 450 }} align="center">
+							<Paper shadow="xs" radius="md" p="md" sx={{ minWidth: 500 }}>
+								<Stack align="center">
+									<Text>Bạn đã đặt lịch thành công</Text>
+									<Group
+										align="center"
+										position="center"
+										mx="auto"
+										sx={{ width: 200 }}
+									>
+										<PrintDetail data={confirmBillResponse} />
+									</Group>
+									{/*
+									<Text weight="bold">Khám tổng quát</Text>
+									<Text>
+										Họ tên:{' '}
+										{confirmBillResponse?.checkupRecords?.[0]?.patientData.name}
+									</Text>
+									<Text>
+										Ngày sinh:{' '}
+										{confirmBillResponse?.checkupRecords?.[0]?.patientData
+											.dateOfBirth
+											? formatDate(
+													confirmBillResponse?.checkupRecords?.[0]?.patientData
+														.dateOfBirth
+											  )
+											: '---'}
+									</Text>
+									<Text>
+										Giới tính:{' '}
+										{confirmBillResponse?.checkupRecords?.[0]?.patientData
+											.gender === 0
+											? 'Nam'
+											: 'Nữ'}
+									</Text>
+									<Text>
+										Phòng {confirmBillResponse?.checkupRecords?.[0]?.roomNumber}{' '}
+										- Tầng {confirmBillResponse?.checkupRecords?.[0]?.floor}
+									</Text>
+									<Text>
+										Số khám bệnh:{' '}
+										{confirmBillResponse?.checkupRecords?.[0]?.numericalOrder}
+									</Text>
+									<Text>
+										Bác sĩ phụ trách:{' '}
+										{confirmBillResponse?.checkupRecords?.[0]?.doctorName}
+									</Text> */}
+								</Stack>
+							</Paper>
+						</Stack>
+					</Stepper.Completed>
+				</Stepper>
+			</form>
+
+			<Paper
+				sx={{
+					position: 'fixed',
+					bottom: 0,
+					left: 0,
+					width: '100%',
+				}}
+				p="md"
+			>
+				<Container size="xl">
+					<Group position="right">
+						{active === 0 && (
+							<Button
+								type="button"
+								sx={{ width: 300 }}
+								disabled={!form.isValid()}
+								onClick={() => {
+									nextStep()
+									triggerGetSlotForAnonyous()
+								}}
+							>
+								Tiếp tục
+							</Button>
+						)}
+						{active === 1 && (
+							<Button
+								form="pay-form"
+								type="submit"
+								sx={{ width: 300 }}
+								disabled={!form.isValid() || !slotForAnonymous?.length}
+								loading={isLoadingBookingForGuest || isLoadingBookingForUser}
+							>
+								Thanh toán
+							</Button>
+						)}
+						{active === 2 && (
+							<>
+								<Button
+									variant="outline"
+									sx={{ width: 150 }}
+									color="red"
+									onClick={() => {
+										form.reset()
+										setShowBill(false)
+										setBillResponse(undefined)
+										setActive(0)
+									}}
+									type="button"
+									disabled={isLoadingPayBill}
+								>
+									Hủy
+								</Button>
+								<Button
+									sx={{ width: 300 }}
+									type="button"
+									onClick={onConfirmBill}
+									loading={isLoadingPayBill}
+								>
+									Xác nhận
+								</Button>
+							</>
+						)}
+						{active === 3 && (
+							<>
+								<Button
+									variant="outline"
+									sx={{ width: 150 }}
+									onClick={() => {
+										form.reset()
+										setShowBill(false)
+										setBillResponse(undefined)
+										setActive(0)
+									}}
+									type="button"
+								>
+									Tiếp tục đặt
+								</Button>
+								<Button
+									sx={{ width: 300 }}
+									type="button"
+									component={Link}
+									to="/"
+								>
+									Quay về trang chủ
+								</Button>
+							</>
+						)}
+					</Group>
+				</Container>
+			</Paper>
 		</Stack>
 	)
 }
