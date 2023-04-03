@@ -21,3 +21,7 @@ export interface UserAccount {
 	name: string
 	patients: Patient[]
 }
+
+export interface PatientItemProps
+	extends React.ComponentPropsWithoutRef<'div'>,
+		Patient {}

@@ -29,8 +29,8 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
 				<Stack ref={componentRef} p="md">
-					<Group position="apart" align="center">
-						<Stack spacing={'xs'} align="center">
+					<Group position="apart" align="center" pr="xl">
+						<Stack spacing={'xs'} align="center" p="xs">
 							<Text size="sm">SỞ Y TẾ TP. Hồ Chí Minh</Text>
 							<Text size="sm" weight="bold">
 								BỆNH VIỆN NHI ĐỒNG 2
@@ -45,29 +45,14 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							<Text size="xl" weight="bold">
 								PHIẾU CHỈ ĐỊNH
 							</Text>
-							<Text size="lg" weight="bold">
+							<Text size={24} weight="bold">
 								Khám tổng quát
-							</Text>
-						</Stack>
-						<Stack align="flex-end">
-							<Barcode
-								value={
-									data?.checkupRecords
-										?.map((item) => item.numericalOrder)
-										?.join('') ?? ''
-								}
-								height={40}
-								displayValue={false}
-							/>
-
-							<Text size="xs">
-								Mã khám bệnh: {data?.checkupRecords?.[0]?.patientId}
 							</Text>
 						</Stack>
 					</Group>
 
-					<Stack spacing="xs" p="md">
-						<Group>
+					<Group position="apart" pr="xl" align="start">
+						<Stack spacing="xs" p="md">
 							<Text>Họ tên: {data?.checkupRecords?.[0]?.patientData.name}</Text>
 							<Text>
 								Ngày sinh:{' '}
@@ -83,19 +68,18 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 									? 'Nam'
 									: 'Nữ'}
 							</Text>
-						</Group>
-						<Text>
-							SĐT: {data?.checkupRecords?.[0]?.patientData.phoneNumber}
-						</Text>
-						<Text>
-							Triệu chứng: {data?.checkupRecords?.[0]?.clinicalSymptom}
-						</Text>
+							<Text>
+								SĐT: {data?.checkupRecords?.[0]?.patientData.phoneNumber}
+							</Text>
+							<Text>
+								Triệu chứng: {data?.checkupRecords?.[0]?.clinicalSymptom}
+							</Text>
 
-						<Text mt="sm" weight="bold">
-							Khám tổng quát
-						</Text>
-						<Stack spacing={'xs'} align="center" mb="xl">
-							<Group>
+							<Divider />
+							<Text mt="sm" weight="bold">
+								Khám tổng quát
+							</Text>
+							<Stack spacing={'xs'} mb="xl">
 								<Text>
 									Phòng {data?.checkupRecords?.[0]?.roomNumber} - Tầng{' '}
 									{data?.checkupRecords?.[0]?.floor}
@@ -106,47 +90,50 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 								<Text>
 									Bác sĩ phụ trách: {data?.checkupRecords?.[0]?.doctorName}
 								</Text>
-							</Group>
-							<Text>
-								<QRCodeSVG value={data?.checkupRecords?.[0]?.qrCode ?? ''} />
-							</Text>
+							</Stack>
+							<Divider />
 						</Stack>
-						<Stack mt="xl">
-							<Text>HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
-							<Group position="apart" align="baseline">
-								<Stack sx={{ maxWidth: '45%' }}>
-									<Text>
-										Vui lòng cầm theo phiếu chỉ định và làm theo hướng dẫn của
-										nhân viên
-									</Text>
-								</Stack>
-								<Stack align="center">
-									<Text size="xs">
-										{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
-									</Text>
-									<Text mb="md" transform="uppercase">
-										Xác nhận đặt lịch
-									</Text>
-									<Paper withBorder p="sm" radius={0} color="green">
-										<Stack>
-											<Text color="red" size="xs">
-												Signature Valid
-											</Text>
-											<Text color="red" size="xs">
-												Ký bởi: BỆNH VIỆN NHI ĐỒNG 2
-											</Text>
-											<Text color="red" size="xs">
-												Ký ngày:{' '}
-												{formatDate(new Date().toString(), 'DD-MM-YYYY')}
-											</Text>
-										</Stack>
-									</Paper>
-									<Text mt="md" weight={'bold'} transform="uppercase">
-										NVHC. {authData?.information?.name}
-									</Text>
-								</Stack>
-							</Group>
-						</Stack>
+						<Text>
+							<QRCodeSVG
+								value={data?.checkupRecords?.[0]?.qrCode ?? ''}
+								size={200}
+							/>
+						</Text>
+					</Group>
+					<Stack p="xs">
+						<Text>HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
+						<Group position="apart" align="baseline">
+							<Stack sx={{ maxWidth: '45%' }}>
+								<Text>
+									Vui lòng cầm theo phiếu chỉ định và làm theo hướng dẫn của
+									nhân viên
+								</Text>
+							</Stack>
+							<Stack align="center">
+								<Text size="xs">
+									{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
+								</Text>
+								<Text mb="md" transform="uppercase">
+									Xác nhận đặt lịch
+								</Text>
+								<Paper withBorder p="sm" radius={0} color="green">
+									<Stack>
+										<Text color="red" size="xs">
+											Signature Valid
+										</Text>
+										<Text color="red" size="xs">
+											Ký bởi: BỆNH VIỆN NHI ĐỒNG 2
+										</Text>
+										<Text color="red" size="xs">
+											Ký ngày: {formatDate(new Date().toString(), 'DD-MM-YYYY')}
+										</Text>
+									</Stack>
+								</Paper>
+								<Text mt="md" weight={'bold'} transform="uppercase">
+									NVHC. {authData?.information?.name}
+								</Text>
+							</Stack>
+						</Group>
 					</Stack>
 				</Stack>
 			</Stack>

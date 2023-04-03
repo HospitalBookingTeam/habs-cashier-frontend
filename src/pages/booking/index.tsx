@@ -46,8 +46,9 @@ import {
 	IconSearch,
 	IconUserCheck,
 } from '@tabler/icons'
-import { Patient, UserAccount } from '@/entities/user'
+import { UserAccount } from '@/entities/user'
 import useBookingStyles from './styles'
+import PatientOption from './PatientOption'
 
 const DATE = new Date().toISOString()
 
@@ -86,7 +87,7 @@ const BookFormModal = () => {
 	const [userAcc, setUserAcc] = useState<UserAccount>()
 	const [patientProfile, setPatientProfile] = useState<string | null>()
 	const [active, setActive] = useState(0)
-	console.log('active', active)
+
 	const { classes } = useBookingStyles()
 	const nextStep = () =>
 		setActive((current) => (current < 3 ? current + 1 : current))
@@ -234,7 +235,7 @@ const BookFormModal = () => {
 									/>
 									<Stack>
 										{isGuest !== 'guest' && (
-											<Group grow align="start">
+											<Group grow align="end">
 												<Stack>
 													<TextInput
 														value={phoneNo}
@@ -260,46 +261,54 @@ const BookFormModal = () => {
 														placeholder="Nhập số điện thoại"
 														readOnly={showBill}
 													/>
-													{!!userAcc && (
-														<Text>
-															{userAcc.name} - {userAcc.email}
-														</Text>
-													)}
 												</Stack>
-												<Select
-													label="Hồ sơ khám bệnh"
-													placeholder="Chọn hồ sơ khám bệnh của bé"
-													data={
-														userAcc?.patients?.map((item) => ({
-															value: item.accountId.toString(),
-															label: item.name,
-														})) ?? []
-													}
-													value={patientProfile}
-													onChange={(val) => {
-														setPatientProfile(val)
-														const profile = userAcc?.patients?.find(
-															(item) => item.accountId.toString() === val
-														)
-														if (!profile) return
-														form.setValues({
-															...form.values,
-															dateOfBirth: new Date(profile.dateOfBirth),
-															phoneNo: profile.phoneNumber,
-															address: profile.address,
-															bhyt: profile.bhyt,
-															gender: profile.gender.toString(),
-															name: profile.name,
-														})
-														form.resetDirty()
-													}}
-													disabled={!userAcc}
-													searchable
-													creatable
-													readOnly={showBill}
-												/>
+												{!!userAcc && (
+													<Stack spacing={0}>
+														<Text size="sm">{userAcc.name}</Text>
+														<Text size="sm">{userAcc.email}</Text>
+													</Stack>
+												)}
 											</Group>
 										)}
+										<Select
+											label="Hồ sơ khám bệnh"
+											placeholder="Chọn hồ sơ khám bệnh của bé"
+											data={
+												userAcc?.patients?.map((item) => ({
+													value: item.id.toString(),
+													label: item.name,
+													...item,
+												})) ?? []
+											}
+											itemComponent={PatientOption}
+											value={patientProfile}
+											onChange={(val) => {
+												setPatientProfile(val)
+												const profile = userAcc?.patients?.find(
+													(item) => item.id.toString() === val
+												)
+												if (!profile) return
+												form.setValues({
+													...form.values,
+													dateOfBirth: new Date(profile.dateOfBirth),
+													phoneNo: profile.phoneNumber,
+													address: profile.address,
+													bhyt: profile.bhyt,
+													gender: profile.gender.toString(),
+													name: profile.name,
+												})
+												form.resetDirty()
+											}}
+											disabled={!userAcc}
+											searchable
+											creatable
+											readOnly={showBill}
+											filter={(value, item) =>
+												!!item?.label
+													?.toLowerCase()
+													.includes(value.toLowerCase().trim())
+											}
+										/>
 										<TextInput
 											withAsterisk
 											required
