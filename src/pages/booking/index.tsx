@@ -270,45 +270,47 @@ const BookFormModal = () => {
 												)}
 											</Group>
 										)}
-										<Select
-											label="Hồ sơ khám bệnh"
-											placeholder="Chọn hồ sơ khám bệnh của bé"
-											data={
-												userAcc?.patients?.map((item) => ({
-													value: item.id.toString(),
-													label: item.name,
-													...item,
-												})) ?? []
-											}
-											itemComponent={PatientOption}
-											value={patientProfile}
-											onChange={(val) => {
-												setPatientProfile(val)
-												const profile = userAcc?.patients?.find(
-													(item) => item.id.toString() === val
-												)
-												if (!profile) return
-												form.setValues({
-													...form.values,
-													dateOfBirth: new Date(profile.dateOfBirth),
-													phoneNo: profile.phoneNumber,
-													address: profile.address,
-													bhyt: profile.bhyt,
-													gender: profile.gender.toString(),
-													name: profile.name,
-												})
-												form.resetDirty()
-											}}
-											disabled={!userAcc}
-											searchable
-											creatable
-											readOnly={showBill}
-											filter={(value, item) =>
-												!!item?.label
-													?.toLowerCase()
-													.includes(value.toLowerCase().trim())
-											}
-										/>
+										{isGuest !== 'guest' && (
+											<Select
+												label="Hồ sơ khám bệnh"
+												placeholder="Chọn hồ sơ khám bệnh của bé"
+												data={
+													userAcc?.patients?.map((item) => ({
+														value: item.id.toString(),
+														label: item.name,
+														...item,
+													})) ?? []
+												}
+												itemComponent={PatientOption}
+												value={patientProfile}
+												onChange={(val) => {
+													setPatientProfile(val)
+													const profile = userAcc?.patients?.find(
+														(item) => item.id.toString() === val
+													)
+													if (!profile) return
+													form.setValues({
+														...form.values,
+														dateOfBirth: new Date(profile.dateOfBirth),
+														phoneNo: profile.phoneNumber,
+														address: profile.address,
+														bhyt: profile.bhyt,
+														gender: profile.gender.toString(),
+														name: profile.name,
+													})
+													form.resetDirty()
+												}}
+												disabled={!userAcc}
+												searchable
+												creatable
+												readOnly={showBill}
+												filter={(value, item) =>
+													!!item?.label
+														?.toLowerCase()
+														.includes(value.toLowerCase().trim())
+												}
+											/>
+										)}
 										<TextInput
 											withAsterisk
 											required

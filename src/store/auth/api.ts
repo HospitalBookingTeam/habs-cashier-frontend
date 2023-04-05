@@ -17,10 +17,15 @@ export const authApi = api.injectEndpoints({
 				},
 			},
 		}),
+		clearCache: build.query<void, void>({
+			query: () => ({
+				url: 'test/clear-cache',
+			}),
+		}),
 	}),
 })
 
-export const { useLoginMutation } = authApi
+export const { useLoginMutation, useLazyClearCacheQuery } = authApi
 
 export const {
 	endpoints: { login },

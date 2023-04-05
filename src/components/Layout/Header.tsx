@@ -1,3 +1,4 @@
+import { useLazyClearCacheQuery } from '@/store/auth/api'
 import { selectAuth } from '@/store/auth/selectors'
 import { logout } from '@/store/auth/slice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
@@ -63,6 +64,7 @@ const SimpleHeader = () => {
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
 	const authData = useAppSelector(selectAuth)
+	const [triggerClearCache] = useLazyClearCacheQuery()
 
 	useEffect(() => {
 		if (!authData?.isAuthenticated) {
@@ -79,14 +81,18 @@ const SimpleHeader = () => {
 							{location.pathname === '/book' ? 'Hỗ trợ đặt lịch' : 'Trang chủ'}
 						</Text>
 						<Text color="white">|</Text>
-						<Text color="white" size="sm">
+						<Button
+							variant="white"
+							size="sm"
+							onClick={async () => triggerClearCache()}
+						>
 							{authData?.information?.name}
-						</Text>
+						</Button>
 					</Group>
 
 					<Group>
 						<Button
-							variant="white"
+							variant="default"
 							onClick={() => {
 								dispatch(logout())
 							}}
