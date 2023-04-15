@@ -6,7 +6,7 @@ export interface AppointmentForGuest {
 	name: string
 	phoneNo: string
 	bhyt: string
-	bhxh: string
+	// bhxh: string
 	dateOfBirth: Date | string | undefined
 	address: string
 	gender: number | string

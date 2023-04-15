@@ -71,7 +71,7 @@ const BookFormModal = () => {
 			name: '',
 			phoneNo: '',
 			bhyt: '',
-			bhxh: '',
+			// bhxh: '',
 			dateOfBirth: undefined,
 			address: '',
 			gender: '0',
@@ -201,7 +201,6 @@ const BookFormModal = () => {
 			})
 	}
 
-	console.log('slotForAnonymous', slotForAnonymous)
 	// useEffect(() => {
 	// 	if (showBill) return
 	// 	if (form.isTouched('doctorId')) {
@@ -374,22 +373,17 @@ const BookFormModal = () => {
 												readOnly={showBill}
 												{...form.getInputProps('phoneNo')}
 											/>
-											<Textarea
-												label="Địa chỉ"
-												readOnly={showBill}
-												{...form.getInputProps('address')}
-											/>
-										</Group>
-										<Group grow>
-											<TextInput
-												label="BHXH"
-												readOnly={showBill}
-												{...form.getInputProps('bhxh')}
-											/>
 											<TextInput
 												label="BHYT"
 												readOnly={showBill}
 												{...form.getInputProps('bhyt')}
+											/>
+										</Group>
+										<Group grow>
+											<Textarea
+												label="Địa chỉ"
+												readOnly={showBill}
+												{...form.getInputProps('address')}
 											/>
 										</Group>
 									</Stack>

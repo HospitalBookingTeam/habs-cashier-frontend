@@ -99,6 +99,7 @@ export interface CheckupRecord {
 	reExamNote?: any
 	address: string
 	reExamTreeCode: string
+	code?: string
 }
 
 export interface BillPayResponse {

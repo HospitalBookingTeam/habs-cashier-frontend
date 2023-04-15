@@ -20,7 +20,6 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 		<>
 			<Button
 				fullWidth={true}
-				color="cyan"
 				variant="outline"
 				onClick={handlePrint}
 				leftIcon={<IconPrinter />}
@@ -29,8 +28,8 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
 				<Stack ref={componentRef} p="md">
-					<Group position="apart" align="center" pr="xl">
-						<Stack spacing={'xs'} align="center" p="xs">
+					<Group position="apart" pt="md" align="start" px="xl">
+						<Stack spacing={'xs'} align="center">
 							<Text size="sm">SỞ Y TẾ TP. Hồ Chí Minh</Text>
 							<Text size="sm" weight="bold">
 								BỆNH VIỆN NHI ĐỒNG 2
@@ -41,13 +40,25 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							</Text>
 							<Text size="xs">{authData.information?.name}</Text>
 						</Stack>
-						<Stack align="center">
+						<Stack align="center" spacing={'sm'}>
 							<Text size="xl" weight="bold">
 								PHIẾU CHỈ ĐỊNH
 							</Text>
 							<Text size={24} weight="bold">
 								Khám tổng quát
 							</Text>
+						</Stack>
+
+						<Stack align="end" spacing={0}>
+							<Barcode
+								height={40}
+								width={1}
+								value={
+									data?.checkupRecords?.[0]?.code?.split('_')?.[1] ?? '---'
+								}
+								displayValue={false}
+							/>
+							<Text size="xs">Mã số: {data?.checkupRecords?.[0]?.code}</Text>
 						</Stack>
 					</Group>
 
