@@ -36,6 +36,10 @@ const GlobalStyles = () => {
 						textAlign: 'right',
 					},
 				},
+				'tr.row-link:hover': {
+					cursor: 'pointer',
+					backgroundColor: `${theme.colors.green[0]} !important`,
+				},
 			})}
 		/>
 	)

@@ -6,10 +6,10 @@ import { useRef } from 'react'
 import Barcode from 'react-barcode'
 import { useReactToPrint } from 'react-to-print'
 import { formatDate } from '@/utils/formats'
-import { BillPayResponse } from '@/entities/bill'
 import { QRCodeSVG } from 'qrcode.react'
+import { HistoryCheckupRecord } from '@/entities/history'
 
-const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
+const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 	const componentRef = useRef(null)
 	const handlePrint = useReactToPrint({
 		pageStyle: `@media print {
@@ -33,24 +33,24 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 				In phiếu khám
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
-				<Stack ref={componentRef} p="md">
-					<Group position="apart" pt="md" align="start" px="xl">
-						<Stack spacing={'xs'} align="center">
-							<Text size="sm">SỞ Y TẾ TP. Hồ Chí Minh</Text>
-							<Text size="sm" weight="bold">
+				<Stack ref={componentRef} p="sm">
+					<Group position="apart" pt="md" align="start">
+						<Stack spacing={1} align="center">
+							<Text size="xs">SỞ Y TẾ TP. Hồ Chí Minh</Text>
+							<Text size="xs" weight="bold">
 								BỆNH VIỆN NHI ĐỒNG 2
 							</Text>
 							<Divider variant="dotted" color="dark" size="md" />
-							<Text size="xs" weight="bold">
+							<Text size={10} weight="bold">
 								Quầy thu ngân
 							</Text>
-							<Text size="xs">{authData.information?.name}</Text>
+							<Text size={10}>{authData.information?.name}</Text>
 						</Stack>
 						<Stack align="center" spacing={'sm'}>
-							<Text size="xl" weight="bold">
-								PHIẾU CHỈ ĐỊNH
+							<Text size="md" weight="bold">
+								PHIẾU KHÁM BỆNH
 							</Text>
-							<Text size={24} weight="bold">
+							<Text size={'lg'} weight="bold">
 								Khám tổng quát
 							</Text>
 						</Stack>
@@ -59,69 +59,50 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							<Barcode
 								height={40}
 								width={1}
-								value={
-									data?.checkupRecords?.[0]?.code?.split('_')?.[1] ?? '---'
-								}
+								value={data?.code?.split('_')?.[1] ?? '---'}
 								displayValue={false}
 							/>
-							<Text size="xs">Mã số: {data?.checkupRecords?.[0]?.code}</Text>
+							<Text size={10}>Mã số: {data?.code}</Text>
 						</Stack>
 					</Group>
 
 					<Group position="apart" pr="xl" align="start">
 						<Stack spacing="xs" p="md">
-							<Text>Họ tên: {data?.checkupRecords?.[0]?.patientData.name}</Text>
-							<Text>
+							<Text size="sm">Họ tên: {data?.patientData.name}</Text>
+							<Text size="sm">
 								Ngày sinh:{' '}
-								{data?.checkupRecords?.[0]?.patientData.dateOfBirth
-									? formatDate(
-											data?.checkupRecords?.[0]?.patientData.dateOfBirth
-									  )
+								{data?.patientData.dateOfBirth
+									? formatDate(data?.patientData.dateOfBirth)
 									: '---'}
 							</Text>
-							<Text>
-								Giới tính:{' '}
-								{data?.checkupRecords?.[0]?.patientData.gender === 0
-									? 'Nam'
-									: 'Nữ'}
+							<Text size="sm">
+								Giới tính: {data?.patientData.gender === 0 ? 'Nam' : 'Nữ'}
 							</Text>
-							<Text>
-								SĐT: {data?.checkupRecords?.[0]?.patientData.phoneNumber}
-							</Text>
-							<Text>
-								Triệu chứng: {data?.checkupRecords?.[0]?.clinicalSymptom}
-							</Text>
+							<Text size="sm">SĐT: {data?.patientData.phoneNumber}</Text>
+							<Text size="sm">Triệu chứng: {data?.clinicalSymptom}</Text>
 
 							<Divider />
-							<Text mt="sm" weight="bold">
+							<Text mt="sm" size="sm" weight="bold">
 								Khám tổng quát
 							</Text>
-							<Stack spacing={'xs'} mb="xl">
-								<Text>
-									Phòng {data?.checkupRecords?.[0]?.roomNumber} - Tầng{' '}
-									{data?.checkupRecords?.[0]?.floor}
+							<Stack spacing={'xs'}>
+								<Text size="sm">
+									Phòng {data?.roomNumber} - Tầng {data?.floor}
 								</Text>
-								<Text>
-									Số khám bệnh: {data?.checkupRecords?.[0]?.numericalOrder}
-								</Text>
-								<Text>
-									Bác sĩ phụ trách: {data?.checkupRecords?.[0]?.doctorName}
-								</Text>
+								<Text size="sm">Số khám bệnh: {data?.numericalOrder}</Text>
+								<Text size="sm">Bác sĩ phụ trách: {data?.doctorName}</Text>
 							</Stack>
 							<Divider />
 						</Stack>
 						<Text>
-							<QRCodeSVG
-								value={data?.checkupRecords?.[0]?.qrCode ?? ''}
-								size={200}
-							/>
+							<QRCodeSVG value={data?.qrCode ?? ''} size={120} />
 						</Text>
 					</Group>
 					<Stack p="xs">
-						<Text>HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
 						<Group position="apart" align="baseline">
 							<Stack sx={{ maxWidth: '45%' }}>
-								<Text>
+								<Text size="sm">HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
+								<Text size="sm">
 									Vui lòng cầm theo phiếu chỉ định và làm theo hướng dẫn của
 									nhân viên
 								</Text>
@@ -130,7 +111,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 								<Text size="xs">
 									{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
 								</Text>
-								<Text mb="md" transform="uppercase">
+								<Text size="sm" mb="md" transform="uppercase">
 									Xác nhận đặt lịch
 								</Text>
 								<Paper withBorder p="sm" radius={0} color="green">
@@ -146,7 +127,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 										</Text>
 									</Stack>
 								</Paper>
-								<Text mt="md" weight={'bold'} transform="uppercase">
+								<Text mt="md" size="sm" weight={'bold'} transform="uppercase">
 									NVHC. {authData?.information?.name}
 								</Text>
 							</Stack>

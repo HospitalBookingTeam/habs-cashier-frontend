@@ -12,6 +12,9 @@ const Queue = lazy(() => import('@/pages/queue'))
 const QueueDetail = lazy(() => import('@/pages/queue/detail'))
 const BookAppointment = lazy(() => import('@/pages/booking'))
 const NotFound = lazy(() => import('@/components/NotFound/NotFoundPage'))
+const ManageRecords = lazy(() => import('@/pages/records'))
+const CheckupRecordHistory = lazy(() => import('@/pages/history/CheckupRecord'))
+const TestRecordHistory = lazy(() => import('@/pages/history/TestRecord'))
 
 function App() {
 	return (
@@ -22,6 +25,13 @@ function App() {
 						<Route index element={<Queue />} />
 						<Route path=":id" element={<QueueDetail />} />
 						<Route path="book" element={<BookAppointment />} />
+						<Route path="records" element={<Outlet />}>
+							<Route index element={<ManageRecords />} />
+							<Route path=":id" element={<CheckupRecordHistory />} />
+						</Route>
+						<Route path="tests" element={<Outlet />}>
+							<Route path=":id" element={<TestRecordHistory />} />
+						</Route>
 					</Route>
 				</Route>
 				<Route element={<IsUserRedirect />}>

@@ -9,7 +9,8 @@ import {
 	Group,
 	Text,
 	Box,
-	Title,
+	Anchor,
+	NavLink,
 } from '@mantine/core'
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -77,10 +78,6 @@ const SimpleHeader = () => {
 			<Container size="xl" className={classes.mainSection}>
 				<Group position="apart">
 					<Group align="baseline">
-						<Text weight={'bolder'} color="white" component={Link} to="/">
-							{location.pathname === '/book' ? 'Hỗ trợ đặt lịch' : 'Trang chủ'}
-						</Text>
-						<Text color="white">|</Text>
 						<Button
 							variant="white"
 							size="sm"
@@ -88,6 +85,15 @@ const SimpleHeader = () => {
 						>
 							{authData?.information?.name}
 						</Button>
+
+						<Group>
+							<Anchor href="/" sx={{ color: 'white' }}>
+								Hóa đơn
+							</Anchor>
+							<Anchor href="/records" sx={{ color: 'white' }}>
+								Quản lí
+							</Anchor>
+						</Group>
 					</Group>
 
 					<Group>

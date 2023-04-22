@@ -1,4 +1,4 @@
-import { createStyles, Grid, Text } from '@mantine/core'
+import { createStyles, Grid, Text, useMantineTheme } from '@mantine/core'
 
 const useStyles = createStyles((theme) => ({
 	label: {
@@ -12,12 +12,15 @@ const RowWithLabel = ({
 	label,
 	content,
 	labelSpan = 3,
+	isOdd = false,
 }: {
 	label: string
 	content?: string
 	labelSpan?: number
+	isOdd?: boolean
 }) => {
 	const { classes } = useStyles()
+	const theme = useMantineTheme()
 	return (
 		<Grid
 			sx={{
@@ -25,6 +28,7 @@ const RowWithLabel = ({
 				borderRadius: 4,
 				width: '100%',
 				margin: 0,
+				background: isOdd ? 'white' : theme.colors.gray[0],
 			}}
 		>
 			<Grid.Col span={labelSpan} px="xs" className={classes.label}>
