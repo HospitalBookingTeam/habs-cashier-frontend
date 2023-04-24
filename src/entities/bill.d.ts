@@ -66,7 +66,7 @@ export interface PatientData {
 }
 
 export interface CheckupRecord {
-	bill?: any
+	bill?: Bill[]
 	patientData: PatientData
 	testRecords: any[]
 	prescription?: any

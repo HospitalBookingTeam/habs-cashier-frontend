@@ -1,3 +1,5 @@
+import { Bill } from './bill'
+
 export interface Patient {
 	id: number
 	phoneNumber: string
@@ -19,6 +21,7 @@ export interface ReExamCheckup {
 	note: string
 }
 export interface HistoryCheckupRecord {
+	bill: Bill[]
 	patientData: PatientData
 	testRecords: any[]
 	prescription?: any

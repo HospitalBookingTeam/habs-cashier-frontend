@@ -8,6 +8,9 @@ import { useReactToPrint } from 'react-to-print'
 import { formatDate } from '@/utils/formats'
 import { BillPayResponse } from '@/entities/bill'
 import { QRCodeSVG } from 'qrcode.react'
+import BillDetails from './Details'
+import dayjs from 'dayjs'
+import { selectTime } from '@/store/configs/selectors'
 
 const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 	const componentRef = useRef(null)
@@ -21,6 +24,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 		content: () => componentRef.current,
 	})
 	const authData = useAppSelector(selectAuth)
+	const configTime = useAppSelector(selectTime)
 
 	return (
 		<>
@@ -33,7 +37,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 				In phiếu khám
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
-				<Stack ref={componentRef} p="xs">
+				<Stack ref={componentRef} p="xs" spacing={'xs'}>
 					<Group position="apart" pt="md" align="start">
 						<Stack spacing={'xs'} align="center">
 							<Text size="xs">SỞ Y TẾ TP. Hồ Chí Minh</Text>
@@ -51,7 +55,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 								PHIẾU KHÁM BỆNH
 							</Text>
 							<Text size={'lg'} weight="bold">
-								Khám tổng quát
+								Khám đa khoa
 							</Text>
 						</Stack>
 
@@ -68,8 +72,8 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 						</Stack>
 					</Group>
 
-					<Group position="apart" pr="xl" align="start">
-						<Stack spacing="xs" p="md">
+					<Group position="apart" align="start" mt="sm">
+						<Stack spacing="xs">
 							<Text size="sm">
 								Họ tên: {data?.checkupRecords?.[0]?.patientData.name}
 							</Text>
@@ -95,20 +99,6 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							</Text>
 
 							<Divider />
-							<Text mt="sm" size="xs" weight="bold">
-								Khám tổng quát
-							</Text>
-							<Stack spacing={'xs'} mb="xl">
-								<Text size="sm">
-									Phòng {data?.checkupRecords?.[0]?.roomNumber} - Tầng{' '}
-									{data?.checkupRecords?.[0]?.floor}
-								</Text>
-
-								<Text size="sm">
-									Bác sĩ phụ trách: {data?.checkupRecords?.[0]?.doctorName}
-								</Text>
-							</Stack>
-							<Divider />
 						</Stack>
 						<Text>
 							<QRCodeSVG
@@ -117,18 +107,43 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							/>
 						</Text>
 					</Group>
+					{data?.checkupRecords?.[0]?.bill?.[0] && (
+						<Stack p="xs">
+							<BillDetails data={data?.checkupRecords?.[0]?.bill?.[0]} />
+						</Stack>
+					)}
 					<Stack p="xs">
 						<Group position="apart" align="baseline">
 							<Stack sx={{ maxWidth: '45%' }}>
-								<Text>HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
-								<Text size="xs">
-									Vui lòng cầm theo phiếu chỉ định và làm theo hướng dẫn của
-									nhân viên
+								<Text mt="sm" size="xs" weight="bold">
+									Khám tổng quát
 								</Text>
+								<Stack spacing={'xs'}>
+									<Text size="sm">
+										Phòng {data?.checkupRecords?.[0]?.roomNumber} - Tầng{' '}
+										{data?.checkupRecords?.[0]?.floor}
+									</Text>
+
+									<Text size="sm">
+										Bác sĩ phụ trách: {data?.checkupRecords?.[0]?.doctorName}
+									</Text>
+									{data?.checkupRecords?.[0]?.estimatedStartTime && (
+										<Text size="sm">
+											Giờ khám dự kiến:{' '}
+											{formatDate(
+												data?.checkupRecords?.[0]?.estimatedStartTime,
+												'HH:mm'
+											)}
+										</Text>
+									)}
+								</Stack>
 							</Stack>
 							<Stack align="center">
 								<Text size="xs">
-									{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
+									{formatDate(
+										new Date(dayjs().valueOf() + (configTime ?? 0)).toString(),
+										'HH:mm, DD/MM/YYYY'
+									)}
 								</Text>
 								<Text transform="uppercase">Xác nhận đặt lịch</Text>
 								<Paper withBorder p="sm" radius={0} color="green">
@@ -140,7 +155,13 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 											Ký bởi: BỆNH VIỆN NHI ĐỒNG 2
 										</Text>
 										<Text color="red" size="xs">
-											Ký ngày: {formatDate(new Date().toString(), 'DD-MM-YYYY')}
+											Ký ngày:{' '}
+											{formatDate(
+												new Date(
+													dayjs().valueOf() + (configTime ?? 0)
+												).toString(),
+												'DD-MM-YYYY'
+											)}
 										</Text>
 									</Stack>
 								</Paper>

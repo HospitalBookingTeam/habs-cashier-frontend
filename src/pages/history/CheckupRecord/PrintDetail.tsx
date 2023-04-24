@@ -8,6 +8,7 @@ import { useReactToPrint } from 'react-to-print'
 import { formatDate } from '@/utils/formats'
 import { QRCodeSVG } from 'qrcode.react'
 import { HistoryCheckupRecord } from '@/entities/history'
+import BillDetails from '@/pages/booking/Details'
 
 const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 	const componentRef = useRef(null)
@@ -82,29 +83,36 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 							<Text size="sm">Triệu chứng: {data?.clinicalSymptom}</Text>
 
 							<Divider />
-							<Text mt="sm" size="sm" weight="bold">
-								Khám tổng quát
-							</Text>
-							<Stack spacing={'xs'}>
-								<Text size="sm">
-									Phòng {data?.roomNumber} - Tầng {data?.floor}
-								</Text>
-								<Text size="sm">Bác sĩ phụ trách: {data?.doctorName}</Text>
-							</Stack>
-							<Divider />
 						</Stack>
 						<Text>
 							<QRCodeSVG value={data?.qrCode ?? ''} size={120} />
 						</Text>
 					</Group>
+
+					{data?.bill?.[0] && (
+						<Stack p="xs">
+							<BillDetails data={data?.bill?.[0]} />
+						</Stack>
+					)}
 					<Stack p="xs">
 						<Group position="apart" align="baseline">
 							<Stack sx={{ maxWidth: '45%' }}>
-								<Text size="sm">HƯỚNG DẪN THỰC HIỆN CẬN LÂM SÀNG</Text>
-								<Text size="sm">
-									Vui lòng cầm theo phiếu chỉ định và làm theo hướng dẫn của
-									nhân viên
+								<Text mt="sm" size="xs" weight="bold">
+									Khám tổng quát
 								</Text>
+								<Stack spacing={'xs'}>
+									<Text size="sm">
+										Phòng {data?.roomNumber} - Tầng {data?.floor}
+									</Text>
+
+									<Text size="sm">Bác sĩ phụ trách: {data?.doctorName}</Text>
+									{data?.estimatedStartTime && (
+										<Text size="sm">
+											Giờ khám dự kiến:{' '}
+											{formatDate(data?.estimatedStartTime, 'HH:mm')}
+										</Text>
+									)}
+								</Stack>
 							</Stack>
 							<Stack align="center">
 								<Text size="xs">

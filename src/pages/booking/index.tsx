@@ -156,6 +156,24 @@ const BookFormModal = () => {
 			})
 				.unwrap()
 				.then((resp) => {
+					if (!resp?.bill) {
+						openModal({
+							children: (
+								<>
+									<Text color="red" weight={'bold'}>
+										Đã hết lịch khám hôm nay
+									</Text>
+								</>
+							),
+							color: 'red',
+							withCloseButton: false,
+							centered: true,
+							onClose: () => {
+								navigate('/')
+							},
+						})
+						return
+					}
 					setBillResponse(resp.bill)
 					setShowBill(true)
 					nextStep()
@@ -171,6 +189,24 @@ const BookFormModal = () => {
 			})
 				.unwrap()
 				.then((resp) => {
+					if (!resp?.bill) {
+						openModal({
+							children: (
+								<>
+									<Text color="red" weight={'bold'}>
+										Đã hết lịch khám hôm nay
+									</Text>
+								</>
+							),
+							color: 'red',
+							withCloseButton: false,
+							centered: true,
+							onClose: () => {
+								navigate('/')
+							},
+						})
+						return
+					}
 					setBillResponse(resp.bill)
 					setShowBill(true)
 					nextStep()
