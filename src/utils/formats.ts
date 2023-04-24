@@ -3,7 +3,7 @@ import utc from 'dayjs/plugin/utc'
 import { MedicineDetail } from '../entities/medicine'
 dayjs.extend(utc)
 
-export const formatDate = (date: string, format = 'DD/MM/YYYY') => {
+export const formatDate = (date: string | number, format = 'DD/MM/YYYY') => {
 	return dayjs(date).format(format)
 }
 

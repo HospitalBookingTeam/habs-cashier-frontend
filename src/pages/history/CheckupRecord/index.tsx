@@ -56,7 +56,7 @@ const RecordHistory = () => {
 										{recordData?.date ? formatDate(recordData.date) : '---'}
 									</Text>
 								</Text>
-								<Box sx={{ maxWidth: 150 }}>
+								<Box sx={{ maxWidth: 160 }}>
 									<PrintDetail data={recordData} />
 								</Box>
 							</Group>

@@ -66,7 +66,7 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 						</Stack>
 					</Group>
 
-					<Group position="apart" pr="xl" align="start">
+					<Group position="apart" pr="md" align="start">
 						<Stack spacing="xs" p="md">
 							<Text size="sm">Họ tên: {data?.patientData.name}</Text>
 							<Text size="sm">
@@ -89,7 +89,6 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 								<Text size="sm">
 									Phòng {data?.roomNumber} - Tầng {data?.floor}
 								</Text>
-								<Text size="sm">Số khám bệnh: {data?.numericalOrder}</Text>
 								<Text size="sm">Bác sĩ phụ trách: {data?.doctorName}</Text>
 							</Stack>
 							<Divider />
@@ -111,7 +110,7 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 								<Text size="xs">
 									{formatDate(new Date().toString(), 'HH:mm, DD/MM/YYYY')}
 								</Text>
-								<Text size="sm" mb="md" transform="uppercase">
+								<Text size="sm" transform="uppercase">
 									Xác nhận đặt lịch
 								</Text>
 								<Paper withBorder p="sm" radius={0} color="green">
@@ -127,7 +126,7 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 										</Text>
 									</Stack>
 								</Paper>
-								<Text mt="md" size="sm" weight={'bold'} transform="uppercase">
+								<Text size="sm" weight={'bold'} transform="uppercase">
 									NVHC. {authData?.information?.name}
 								</Text>
 							</Stack>

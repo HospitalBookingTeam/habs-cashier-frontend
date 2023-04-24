@@ -14,6 +14,7 @@ import {
 } from '@mantine/core'
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Clock from '../Clock'
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -97,6 +98,7 @@ const SimpleHeader = () => {
 					</Group>
 
 					<Group>
+						<Clock />
 						<Button
 							variant="default"
 							onClick={() => {

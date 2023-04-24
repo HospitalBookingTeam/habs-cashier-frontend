@@ -162,7 +162,10 @@ const TestRecordManage = () => {
 						label="Thời gian xét nghiệm"
 						allowSingleDateInRange={true}
 						value={dateRange}
-						onChange={setDateRange}
+						onChange={(values) => {
+							setPage(1)
+							setDateRange(values)
+						}}
 					/>
 				</Group>
 				<Group align="start">
@@ -170,7 +173,10 @@ const TestRecordManage = () => {
 						<CustomMultiSelect
 							data={formatRoomOptions(roomList)}
 							value={roomsFilter ?? undefined}
-							onChange={setRoomsFilter}
+							onChange={(values) => {
+								setPage(1)
+								setRoomsFilter(values)
+							}}
 							label="Phòng xét nghiệm"
 							placeholder="Tất cả"
 						/>
@@ -179,7 +185,10 @@ const TestRecordManage = () => {
 						<CustomMultiSelect
 							data={statusToIncludeList}
 							value={statusToInclude ?? undefined}
-							onChange={setStatusToInclude}
+							onChange={(values) => {
+								setPage(1)
+								setStatusToInclude(values)
+							}}
 							label="Tình trạng lọc"
 							placeholder="Tất cả"
 						/>
@@ -187,7 +196,10 @@ const TestRecordManage = () => {
 					<CustomMultiSelect
 						data={statusToIncludeList}
 						value={statusToExclude}
-						onChange={setStatusToExclude}
+						onChange={(values) => {
+							setPage(1)
+							setStatusToExclude(values)
+						}}
 						label="Tình trạng không lọc"
 					/>
 				</Group>
