@@ -133,7 +133,7 @@ const QueueDetail = () => {
 					<Details data={data} />
 					<Divider my="xs" />
 					<Group position="right">
-						<Button
+						{/* <Button
 							color="red"
 							variant="outline"
 							size="lg"
@@ -142,7 +142,7 @@ const QueueDetail = () => {
 							leftIcon={<IconTrash />}
 						>
 							Hủy hóa đơn
-						</Button>
+						</Button> */}
 						<Button
 							size="lg"
 							sx={{ width: 200 }}
