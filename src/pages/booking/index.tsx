@@ -156,7 +156,7 @@ const BookFormModal = () => {
 			})
 				.unwrap()
 				.then((resp) => {
-					if (!resp?.bill) {
+					if (!resp?.data?.bill) {
 						openModal({
 							children: (
 								<>
@@ -174,11 +174,30 @@ const BookFormModal = () => {
 						})
 						return
 					}
-					setBillResponse(resp.bill)
+					setBillResponse(resp.data.bill)
 					setShowBill(true)
 					nextStep()
 				})
-				.catch((error) => {})
+				.catch(({ data: { message } }) => {
+					openModal({
+						children: (
+							<>
+								<Text color="red" weight={'bold'}>
+									{message}
+								</Text>
+							</>
+						),
+						color: 'red',
+						withCloseButton: false,
+						centered: true,
+						onClose: () => {
+							form.reset()
+							setShowBill(false)
+							setBillResponse(undefined)
+							setActive(0)
+						},
+					})
+				})
 		} else {
 			await bookForUserMutation({
 				clinicalSymptom: values.clinicalSymptom,
@@ -189,7 +208,7 @@ const BookFormModal = () => {
 			})
 				.unwrap()
 				.then((resp) => {
-					if (!resp?.bill) {
+					if (!resp?.data?.bill) {
 						openModal({
 							children: (
 								<>
@@ -207,11 +226,30 @@ const BookFormModal = () => {
 						})
 						return
 					}
-					setBillResponse(resp.bill)
+					setBillResponse(resp.data.bill)
 					setShowBill(true)
 					nextStep()
 				})
-				.catch((error) => {})
+				.catch(({ data: { message } }) => {
+					openModal({
+						children: (
+							<>
+								<Text color="red" weight={'bold'}>
+									{message}
+								</Text>
+							</>
+						),
+						color: 'red',
+						withCloseButton: false,
+						centered: true,
+						onClose: () => {
+							form.reset()
+							setShowBill(false)
+							setBillResponse(undefined)
+							setActive(0)
+						},
+					})
+				})
 		}
 	}
 

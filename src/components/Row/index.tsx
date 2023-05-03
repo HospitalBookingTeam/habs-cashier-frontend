@@ -28,6 +28,7 @@ const RowWithLabel = ({
 				borderRadius: 4,
 				width: '100%',
 				margin: 0,
+				flex: 1,
 				background: isOdd ? 'white' : theme.colors.gray[0],
 			}}
 		>

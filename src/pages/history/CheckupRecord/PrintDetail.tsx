@@ -27,15 +27,15 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 		<>
 			<Button
 				fullWidth={true}
-				variant="outline"
+				variant="default"
 				onClick={handlePrint}
 				leftIcon={<IconPrinter />}
 			>
 				In phiếu khám
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
-				<Stack ref={componentRef} p="sm">
-					<Group position="apart" pt="md" align="start">
+				<Stack ref={componentRef} p="sm" spacing={'xs'}>
+					<Group position="apart" pt="sm" align="start">
 						<Stack spacing={1} align="center">
 							<Text size="xs">SỞ Y TẾ TP. Hồ Chí Minh</Text>
 							<Text size="xs" weight="bold">
@@ -67,8 +67,8 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 						</Stack>
 					</Group>
 
-					<Group position="apart" pr="md" align="start">
-						<Stack spacing="xs" p="md">
+					<Group position="apart" pr="sm" align="start">
+						<Stack spacing="xs" p="sm" sx={{ maxWidth: '50%' }}>
 							<Text size="sm">Họ tên: {data?.patientData.name}</Text>
 							<Text size="sm">
 								Ngày sinh:{' '}
@@ -81,14 +81,12 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 							</Text>
 							<Text size="sm">SĐT: {data?.patientData.phoneNumber}</Text>
 							<Text size="sm">Triệu chứng: {data?.clinicalSymptom}</Text>
-
-							<Divider />
 						</Stack>
 						<Text>
 							<QRCodeSVG value={data?.qrCode ?? ''} size={120} />
 						</Text>
 					</Group>
-
+					<Divider />
 					{data?.bill?.[0] && (
 						<Stack p="xs">
 							<BillDetails data={data?.bill?.[0]} />
@@ -97,7 +95,7 @@ const PrintDetail = ({ data }: { data?: HistoryCheckupRecord }) => {
 					<Stack p="xs">
 						<Group position="apart" align="baseline">
 							<Stack sx={{ maxWidth: '45%' }}>
-								<Text mt="sm" size="xs" weight="bold">
+								<Text size="xs" weight="bold">
 									Khám tổng quát
 								</Text>
 								<Stack spacing={'xs'}>

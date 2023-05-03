@@ -16,6 +16,7 @@ const Info = () => {
 				Thông tin người bệnh
 			</Title>
 			<Stack sx={{ gap: 4 }}>
+				<RowWithLabel label={'Nội dung'} content={data?.content} />
 				<RowWithLabel label={'Họ và tên'} content={data?.patientName} />
 				<RowWithLabel
 					label={'Ngày sinh'}
@@ -33,7 +34,6 @@ const Info = () => {
 					label={'Số điện thoại người thân'}
 					content={data?.accountPhoneNo || '---'}
 				/>
-				<RowWithLabel label={'Nội dung'} content={data?.content} />
 			</Stack>
 		</Stack>
 	)

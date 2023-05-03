@@ -45,14 +45,20 @@ export const bookingApi = api.injectEndpoints({
 				url: `slots/slot-for-annonymous`,
 			}),
 		}),
-		bookForGuest: build.mutation<BillConfirmResponse, AppointmentForGuest>({
+		bookForGuest: build.mutation<
+			{ success: boolean; data: BillConfirmResponse; message?: string },
+			AppointmentForGuest
+		>({
 			query: (body) => ({
 				url: `appointments/guest`,
 				method: 'POST',
 				body,
 			}),
 		}),
-		bookForUser: build.mutation<BillConfirmResponse, AppointmentForUser>({
+		bookForUser: build.mutation<
+			{ success: boolean; data: BillConfirmResponse; message?: string },
+			AppointmentForUser
+		>({
 			query: (body) => ({
 				url: `appointments`,
 				method: 'POST',

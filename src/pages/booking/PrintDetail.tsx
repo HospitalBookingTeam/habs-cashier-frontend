@@ -38,13 +38,12 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 			</Button>
 			<Stack sx={{ overflow: 'hidden', height: 0 }}>
 				<Stack ref={componentRef} p="xs" spacing={'xs'}>
-					<Group position="apart" pt="md" align="start">
+					<Group position="apart" pt="sm" align="start">
 						<Stack spacing={'xs'} align="center">
 							<Text size="xs">SỞ Y TẾ TP. Hồ Chí Minh</Text>
 							<Text size="xs" weight="bold">
 								BỆNH VIỆN NHI ĐỒNG 2
 							</Text>
-							<Divider variant="dotted" color="dark" size="sm" />
 							<Text size={10} weight="bold">
 								Quầy thu ngân
 							</Text>
@@ -72,8 +71,8 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 						</Stack>
 					</Group>
 
-					<Group position="apart" align="start" mt="sm">
-						<Stack spacing="xs">
+					<Group position="apart" align="start">
+						<Stack spacing="xs" p="sm" sx={{ maxWidth: '50%' }}>
 							<Text size="sm">
 								Họ tên: {data?.checkupRecords?.[0]?.patientData.name}
 							</Text>
@@ -97,8 +96,6 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							<Text size="sm">
 								Triệu chứng: {data?.checkupRecords?.[0]?.clinicalSymptom}
 							</Text>
-
-							<Divider />
 						</Stack>
 						<Text>
 							<QRCodeSVG
@@ -107,6 +104,7 @@ const PrintDetail = ({ data }: { data?: BillPayResponse }) => {
 							/>
 						</Text>
 					</Group>
+					<Divider />
 					{data?.checkupRecords?.[0]?.bill?.[0] && (
 						<Stack p="xs">
 							<BillDetails data={data?.checkupRecords?.[0]?.bill?.[0]} />

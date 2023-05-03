@@ -76,4 +76,7 @@ export interface HistoryTestRecord {
 	resultDescription?: any
 	failReason?: string
 	code?: string
+	requestDoctor: string
+	bill: Bill
+	patient: Patient
 }

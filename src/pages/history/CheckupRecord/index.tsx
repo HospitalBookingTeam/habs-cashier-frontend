@@ -40,56 +40,58 @@ const RecordHistory = () => {
 
 	return (
 		<Stack>
-			<Title order={3}>Kết quả khám bệnh</Title>
+			<Group position="apart">
+				<Title order={3}>Khám bệnh</Title>
+				<Box sx={{ maxWidth: 160 }}>
+					<PrintDetail data={recordData} />
+				</Box>
+			</Group>
 			<Paper p="md" sx={{ backgroundColor: 'white' }}>
-				<Tabs value={activeTab} onTabChange={setActiveTab}>
+				{/* <Tabs value={activeTab} onTabChange={setActiveTab}>
 					<Tabs.List grow>
-						<Tabs.Tab value="record">Thông tin chi tiết</Tabs.Tab>
-						{/* <Tabs.Tab value="reExamTree">Chuỗi khám</Tabs.Tab> */}
-					</Tabs.List>
-					<Tabs.Panel value="record" pt="xs">
-						<Stack>
-							<Group position="apart">
-								<Text>
-									Thời gian:{' '}
-									<Text span color="green" weight={'bolder'}>
-										{recordData?.date ? formatDate(recordData.date) : '---'}
-									</Text>
-								</Text>
-								<Box sx={{ maxWidth: 160 }}>
-									<PrintDetail data={recordData} />
-								</Box>
-							</Group>
-							<Divider />
-							<PatientInfo data={recordData?.patientData} />
-							<Divider />
-							<HistoryRecord data={recordData} />
+						<Tabs.Tab value="record">Thông tin chi tiết</Tabs.Tab> */}
+				{/* <Tabs.Tab value="reExamTree">Chuỗi khám</Tabs.Tab> */}
+				{/* </Tabs.List>
+					<Tabs.Panel value="record" pt="xs"> */}
+				<Stack>
+					<Group position="apart">
+						<Text>
+							Thời gian:{' '}
+							<Text span color="green" weight={'bolder'}>
+								{recordData?.date ? formatDate(recordData.date) : '---'}
+							</Text>
+						</Text>
+					</Group>
+					<Divider />
+					<PatientInfo data={recordData?.patientData} />
+					<Divider />
+					<HistoryRecord data={recordData} />
 
-							{recordData?.testRecords?.length ? (
-								<>
-									<Divider />
-									<TestRecordList data={recordData?.testRecords} />
-								</>
-							) : (
-								<></>
-							)}
-							{recordData?.prescription ? (
-								<>
-									<Divider />
-									<MedicationList data={recordData?.prescription} />
-								</>
-							) : (
-								<></>
-							)}
-						</Stack>
-					</Tabs.Panel>
-					{/* <Tabs.Panel value="reExamTree" pt="xs" sx={{ position: 'relative' }}>
+					{recordData?.testRecords?.length ? (
+						<>
+							<Divider />
+							<TestRecordList data={recordData?.testRecords} />
+						</>
+					) : (
+						<></>
+					)}
+					{recordData?.prescription ? (
+						<>
+							<Divider />
+							<MedicationList data={recordData?.prescription} />
+						</>
+					) : (
+						<></>
+					)}
+				</Stack>
+				{/* </Tabs.Panel> */}
+				{/* <Tabs.Panel value="reExamTree" pt="xs" sx={{ position: 'relative' }}>
 						<LoadingOverlay visible={isLoading || isLoadingReExamTree} />
 						<Stack sx={{ minHeight: 200 }}>
 							<PatientRecordTree data={reExamTree} />
 						</Stack>
 					</Tabs.Panel> */}
-				</Tabs>
+				{/* </Tabs> */}
 			</Paper>
 		</Stack>
 	)
